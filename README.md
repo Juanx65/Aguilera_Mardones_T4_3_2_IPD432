@@ -10,7 +10,7 @@ El proyecto se desarrolló usando las siguientes herramientas:
 * Software Vivado 2021.1
 * Tarjeta de desarrollo ZYBO
 
-El sistema operativo utilizado fue Windows 10 /  Windwos 11.
+El sistema operativo utilizado fue Windows 10 /  Windwos 11 / Manjaro Linux (Gnome 41.3).
 
 Los tiempos estimados de síntesis e implementación fueron tomados operando en un computador con las siguientes caracterisiticas:
 
@@ -29,11 +29,11 @@ Para reproducir la síntesis del coprocesador mediante Vitis HLS se utilizan los
 
 * Elegir nombre para la solución, escoger el periodo del reloj a utilizar en la síntesis (se conserva el valor por defecto de 10 ns para obtener un estimado del <em>timing</em> comparable con el esperado al cargar el diseño en la taejta).
 
-* En la sección ```Part Selection```, ```Parts```, especificar la tarjeta en la cual se implementará el diseño, en este caso  ```XC7010TCSG400-1 ???``` .
+* En la sección ```Part Selection```, ```Parts```, especificar la tarjeta en la cual se implementará el diseño, en este caso  ```XC7Z010CLG400-1```.
 
-* Conservar la configuración por defecto en la sección ```Flow Target``` y hacer click en el botón ```Finish ```
+* Conservar la configuración por defecto en la sección ```Flow Target``` y hacer click en el botón ```Finish ```.
 
-[Device part.](/Imagenes_Readme/Start_HLS.gif)
+![Device part.](/Imagenes_Readme/Start_HLS.gif)
 
 * Sintetizar el proyecto haciendo click en el botón ```Run``` de la barra superior del Software o  ```Run C Synthesis ``` ubicado en la sección ```Flow Navigator```.
 
@@ -44,8 +44,6 @@ Si todo ha ido como corresponde, la síntesis debiese entregar resultados satisf
 * Para validar el diseño se ejecuta la Cosimulación  haciendo click en botón de ``` Run Cosimulation ``` ubicado en la sección ```Flow Navigator ```.
 
   Con este diseño se espera un error debido a que  se está trabajando con datos del tipo entero, y se están comparando con datos flotantes para la validación. Sin embargo el error obtenido se encuentra por debajo del 1%.
-  
-  La función ``` hls::sqrt``` perteneciente a la biblioteca [hls_math.h](https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/Vitis-HLS-Math-Library)  tambien afecta a este error, pero su uso se justifica  ya que esta función permite disminuir la latencia del procesador en 16 ciclos respecto a la función ```sqrt``` de la librería ```math.h```que si bien es más precisa impone un <em>overhead</em> a la latencia del sistema. En el caso de usar datos del tipo flotantes, el error se reduce casi en su totalidad, pero la latencia aumenta significativamente.
 
 * Exportar IP hacienco click en el botón ```Export RTL``` en la sección ```Flow navigator```. Esta acción genera un archvio .zip, el cual al ser descomprimido puede ser añadido a ```Vivado``` como se mostrará más adelante.
 
@@ -78,7 +76,7 @@ void eucHW(Tout *y_sqrt, T x[2*LENGTH])
 ![Vivado Project process.](/Imagenes_Readme/create_vivado_project.gif)
 
  Adicionalmente, se programó el script de Python ``` \PYTHON_SRC\serial_test.py ``` donde se generan 1000 instancias de prueba, donde llegamos a un error promedio de 0.24, el cual es menor al 1% de error promedio.
- 
+
 ### Reporte de frecuencia, latencia y throughtput
 
 El proyecto se implemento con una frecuencia de 100 MHz, como se sugeira en la sintesis de HLS. Los resultados finales muestran que se cumplen todas las restricciones de timepo, logrando un WNS de 0.081 ns, como se muestra en la Figura siguiente:
@@ -98,4 +96,3 @@ El uso de recursos se muestra en la Figura siguiente:
 * Sintesis (HLS) = ???
 * Sintesis (Vivado) = ???
 * Implementacion = ???
-
