@@ -1,7 +1,7 @@
 arch = open("struct_BRAM.txt", "w")
 
-s = "XEuchw_Set_{BRAM}_{br}"
-size = 256
+s = "XEuchw_Write_{BRAM}_{br}_Words"
+size = 128
 
 
 ##BRAMS A

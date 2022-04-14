@@ -10,6 +10,6 @@ typedef uint32_t Tout;
 typedef ap_uint<26> uint26_t;  // Tipo variable intermedia
 typedef ap_uint<23> uint23_t;  // Tipo variable intermedia
 
-#define LENGTH 128
+#define LENGTH 1024
 
 #endif
