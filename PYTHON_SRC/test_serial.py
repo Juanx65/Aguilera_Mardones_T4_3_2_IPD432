@@ -1,6 +1,7 @@
 from serial import Serial
 from random import randint
 import time
+import struct
 
 class zynqTest():
     def __init__(self, port='COM8', baudrate=115200, vectorSize=128 ,tests=1):
@@ -57,7 +58,9 @@ class zynqTest():
         for tst in range(self.tests):
             self.generateVecs()
             self.sendVector(self.vectorConcat)
-            y_sqrt  = self.recieveResult()
+            
+            
+            y_sqrt  = float(self.recieveResult())
 
             res_err = 100*abs((y_sqrt - self.expected)/self.expected)
 
@@ -77,7 +80,7 @@ class zynqTest():
 
 
 if __name__ == "__main__":
-    zynqDev = zynqTest('/dev/ttyS4', 115200, 1024, 10)
+    zynqDev = zynqTest('/dev/ttyUSB1', 115200, 1024, 10)
 
     print("Listening...")
 

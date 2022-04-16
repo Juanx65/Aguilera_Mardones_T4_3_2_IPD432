@@ -3,7 +3,7 @@
 #include <xscugic.h>
 #include <xil_exception.h>
 #include "xeuchw.h"
-//#include <xil_printf.h>
+#include <xil_printf.h>
 
 
 #define INTC_DEVICE_ID			XPAR_PS7_SCUGIC_0_DEVICE_ID
@@ -51,8 +51,7 @@ void (*XHLSWriteFunc[])() = { XEuchw_Write_x_0_Bytes,
 			XEuchw_Write_x_28_Bytes, XEuchw_Write_x_29_Bytes, XEuchw_Write_x_30_Bytes,
 			XEuchw_Write_x_31_Bytes};
 u8 TxData[BUFFER_SIZE];
-//u32 RxData[1];
-float RxData[1];
+u32 RxData[1];
 int TxDataSend(XEuchw *InstancePtr, u8 data[VECTOR_SIZE])
 {
 	int status = XST_SUCCESS;

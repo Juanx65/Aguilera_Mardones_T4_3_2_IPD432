@@ -14,6 +14,6 @@ void eucHW(Tout *y_sqrt, T x[2*LENGTH])
 		#pragma HLS PIPELINE ii=2
 		res += (x[i+ LENGTH] -x[i])*(x[i+ LENGTH] -x[i]);
 	}
-	*y_sqrt = hls::sqrt(res);
+	*y_sqrt = sqrt(res);
 	return;
 }
