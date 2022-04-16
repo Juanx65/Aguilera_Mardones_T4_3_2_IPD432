@@ -77,7 +77,7 @@ class zynqTest():
 
 
 if __name__ == "__main__":
-    zynqDev = zynqTest('/dev/ttyUSB1', 115200, 1024, 10)
+    zynqDev = zynqTest('/dev/ttyS4', 115200, 1024, 10)
 
     print("Listening...")
 

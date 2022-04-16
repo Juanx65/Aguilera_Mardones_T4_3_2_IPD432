@@ -1,14 +1,14 @@
-Wed Apr 13 21:39:07 2022: Server was asked to start on port: '33325'
-Wed Apr 13 21:39:07 2022: Server is using token UUID: 'b9400f51-433a-4875-8c86-58c2788ef92b'
-Wed Apr 13 21:39:07 2022: Attempting to start server on port '33325'
-Wed Apr 13 21:39:07 2022: XRC main fifo: created main fifo '/tmp/xrcmainb9400f51-433a-4875-8c86-58c2788ef92b', fd read = 11
-Wed Apr 13 21:39:07 2022: Running Rule Check Server
-Wed Apr 13 21:39:07 2022: Version 1.6.1
-Wed Apr 13 21:39:08 2022: Rule Check Server: Accepted socket connection from client
-Wed Apr 13 21:39:08 2022: EXCHANGE_TOKEN received, server token: b9400f51-433a-4875-8c86-58c2788ef92b, passed token: b9400f51-433a-4875-8c86-58c2788ef92b
-Wed Apr 13 21:56:13 2022: STOP_SERVER received, server token: b9400f51-433a-4875-8c86-58c2788ef92b, passed token: b9400f51-433a-4875-8c86-58c2788ef92b
-Wed Apr 13 21:56:13 2022: Socket received request to stop server.
-Wed Apr 13 21:56:13 2022: SERVER: destructor for server bound to port 33325
-Wed Apr 13 21:56:13 2022: XRC main fifo: Good unlink of /tmp/xrcmainb9400f51-433a-4875-8c86-58c2788ef92b
-Wed Apr 13 21:56:13 2022: Server exiting with status 0.
-Wed Apr 13 21:56:13 2022: Closing log file.
+Fri Apr 15 23:30:01 2022: Server was asked to start on port: '34029'
+Fri Apr 15 23:30:01 2022: Server is using token UUID: '948efe56-adf5-441e-9347-3e4a845428a0'
+Fri Apr 15 23:30:01 2022: Attempting to start server on port '34029'
+Fri Apr 15 23:30:01 2022: XRC main fifo: created main fifo '/tmp/xrcmain948efe56-adf5-441e-9347-3e4a845428a0', fd read = 11
+Fri Apr 15 23:30:01 2022: Running Rule Check Server
+Fri Apr 15 23:30:01 2022: Version 1.6.1
+Fri Apr 15 23:30:02 2022: Rule Check Server: Accepted socket connection from client
+Fri Apr 15 23:30:02 2022: EXCHANGE_TOKEN received, server token: 948efe56-adf5-441e-9347-3e4a845428a0, passed token: 948efe56-adf5-441e-9347-3e4a845428a0
+Fri Apr 15 23:39:28 2022: STOP_SERVER received, server token: 948efe56-adf5-441e-9347-3e4a845428a0, passed token: 948efe56-adf5-441e-9347-3e4a845428a0
+Fri Apr 15 23:39:28 2022: Socket received request to stop server.
+Fri Apr 15 23:39:28 2022: SERVER: destructor for server bound to port 34029
+Fri Apr 15 23:39:28 2022: XRC main fifo: Good unlink of /tmp/xrcmain948efe56-adf5-441e-9347-3e4a845428a0
+Fri Apr 15 23:39:28 2022: Server exiting with status 0.
+Fri Apr 15 23:39:28 2022: Closing log file.
