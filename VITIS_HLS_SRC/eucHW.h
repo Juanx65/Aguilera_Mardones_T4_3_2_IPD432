@@ -3,6 +3,9 @@
 
 #include "specs.h"
 #include <cmath>
-//void eucHW (T A[LENGTH], T B[LENGTH], Tout C[1]);
+#include <hls_math.h>  /* Se incluyue para el uso de la funcion hls::sqrt
+                        * que disminuye la latencia respecto a sdt::sqrt,
+                        * con el costo de tener un mayor error.
+                        */
 void eucHW (Tout *y_sqrt, T x[2*LENGTH]);
 #endif

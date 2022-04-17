@@ -25,8 +25,8 @@ class zynqTest():
 
         while (line == None or line == "\n"):
             time.sleep(0.2)
-        y_sqrt = line.strip().split(":")[1]
-        return float(y_sqrt)
+        y_sqrt, ticks = line.strip().split(":")[1].split(";")
+        return float(y_sqrt), float(ticks)
 
     def generateVecs(self):
         res = 0
@@ -58,22 +58,22 @@ class zynqTest():
         for tst in range(self.tests):
             self.generateVecs()
             self.sendVector(self.vectorConcat)
-            
-            
-            y_sqrt  = float(self.recieveResult())
+
+
+            y_sqrt,ticks  = (self.recieveResult())
 
             res_err = 100*abs((y_sqrt - self.expected)/self.expected)
 
             print("TRIAL", tst+1, "HARDWARE RESULT:", y_sqrt, "\t SOFTWARE RESULT: ", round(self.expected,4), end="")
-
+            print(" TICKS:", ticks)
 
             if (res_err > 1):
                 result+=1
                 print(" TRIAL FAILED")
             else:
                 print(" TRIAL PASS")
-            
-                
+
+
 
 
         return result
@@ -93,7 +93,7 @@ if __name__ == "__main__":
     res = zynqDev.runTest()
 
     percent = 100*res/zynqDev.tests
-    
+
     if percent > 90:
         print(50*"*")
         print("*" + 22 * "", str(percent) + "%  TRIALS FAILED" + 22*"" + "*")
@@ -102,6 +102,6 @@ if __name__ == "__main__":
         print(50*"*")
         print("*" + 22 * "", str(100- percent) + "% TRIALS PASSED" + 22*"" + "*")
         print(50*"*")
-    
+
 
    # zynqDev.closeSerial()

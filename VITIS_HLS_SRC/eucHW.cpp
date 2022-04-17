@@ -1,19 +1,32 @@
 #include "eucHW.h"
+/**
+ * @brief EucHW calcula la distancia euclidiana entre los vectores almacenados en la variable x,
+ * cuyo resultado es almacenado en el puntero y_sqrt.
+ *
 
+ * @param x Vectores formado por la concatenación de los dos vectores a operar, ambos de tamaño LENGTH
+ * @param y_sqrt Puntero resultado
+ */
 void eucHW(Tout *y_sqrt, T x[2*LENGTH])
 {
-	#pragma HLS INTERFACE mode=s_axilite port=x storage_impl=bram
+	#pragma HLS INTERFACE mode=s_axilite port=x storage_impl=bram /* Interface mode s_axislite
+																	permite el uso de el protocolo de comunicacion AXIS
+																	para los puertos especificados */
 	#pragma HLS INTERFACE mode=s_axilite port=y_sqrt
 	#pragma HLS INTERFACE mode=s_axilite port=return
-	#pragma HLS ARRAY_PARTITION variable=x type=cyclic factor=32
+	#pragma HLS ARRAY_PARTITION variable=x type=cyclic factor=64
 
-	uint26_t res = 0;
+	T_int res = 0;
 	MainLoop: for (int i = 0; i < LENGTH; ++i)
 	{
-		#pragma HLS UNROLL factor=32
-		#pragma HLS PIPELINE ii=2
-		res += (x[i+ LENGTH] -x[i])*(x[i+ LENGTH] -x[i]);
+		#pragma HLS UNROLL factor=64
+		#pragma HLS PIPELINE ii=2  /* asegura trabajar con el pipeline lleno . */
+		res += (x[i+ LENGTH] -x[i])*(x[i+ LENGTH] -x[i]); /* res almacena la suma de el cuadrado de la
+															diferencia entre el vector A ( primera mitad
+															del vector x) y B (segunda mitad del vector x) */
 	}
-	*y_sqrt = sqrt(res);
+
+	//*y_sqrt = sqrt(res); /* raiz cuadrada para numeros de punto flotante */
+	*y_sqrt = hls::sqrt(res); /* raiz cuadrada para numeros enteros sin signo */
 	return;
 }
