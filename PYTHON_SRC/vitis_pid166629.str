@@ -1,0 +1,96 @@
+/*
+
+Xilinx Vitis v2021.2.0 (64-bit) [Major: 2021, Minor: 2]
+SW Build 3363750 on 2021-10-16-13:10:08
+
+Process ID (PID): 166629
+License: Customer
+
+Current time: 	Sun Apr 17 15:28:19 CLT 2022
+Time zone: 	Chile Standard Time (America/Santiago)
+
+OS: Manjaro Linux
+OS Version: 5.15.32-1-MANJARO
+OS Architecture: amd64
+Available processors (cores): 12
+
+Display: :1
+Screen size: 1920x1080
+Available screens: 2
+Available disk space: 95 GB
+
+Java version: 	11.0.11 64-bit
+Java home: 	/tools/Xilinx/Vitis/2021.2/tps/lnx64/jre11.0.11_9
+Java executable location: 	/tools/Xilinx/Vitis/2021.2/tps/lnx64/jre11.0.11_9/bin/java
+Java initial memory (-Xms): 	64 MB
+Java maximum memory (-Xmx):	 1,024 MB
+
+Java library paths: /tools/Xilinx/Vitis/2021.2/tps/lnx64/javafx-sdk-11.0.2/lib:/tools/Xilinx/Vitis/2021.2/lib/lnx64.o/Default:/tools/Xilinx/Vitis/2021.2/lib/lnx64.o:/tools/Xilinx/Vitis/2021.2/tps/lnx64/jre11.0.11_9/lib/:/tools/Xilinx/Vitis/2021.2/tps/lnx64/jre11.0.11_9/lib//server:/tools/Xilinx/Vitis/2021.2/lib/lnx64.o:/tools/Xilinx/Vitis/2021.2/lib/lnx64.o/Default:/tools/Xilinx/Vitis/2021.2/lib/lnx64.o:/tools/Xilinx/Vitis/2021.2/tps/lnx64/python-3.8.3/lib:/tools/Xilinx/Vitis/2021.2/aietools/lib/lnx64.o:/tools/Xilinx/Vivado/2021.2/bin/../lnx64/tools/dot/lib:/tools/Xilinx/Vitis/2021.2/bin/../lnx64/tools/dot/lib:/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+
+Java class paths: /tools/Xilinx/Vitis/2021.2/eclipse/lnx64.o//plugins/org.eclipse.equinox.launcher_1.5.700.v20200207-2156.jar
+LD_LIBRARY_PATH: /tools/Xilinx/Vitis
+
+User name: 	root
+User home directory: /root
+User working directory: /home/juan/Documents/FPGA/Aguilera_Mardones_T4_3_2_IPD432/PYTHON_SRC
+User country: 	US
+User language: 	en
+User locale: 	en_US
+
+RDI_BASEROOT: /tools/Xilinx/Vitis
+HDI_APPROOT: /tools/Xilinx/Vitis/2021.2
+RDI_DATADIR: /tools/Xilinx/Vitis/2021.2/data
+RDI_BINDIR: /tools/Xilinx/Vitis/2021.2/bin
+
+Vitis preferences directory: /root/.Xilinx/Vitis/2021.2/
+Vitis workspace directory: /home/juan/Documents/FPGA/TestP3_2_2/vitis_128_64
+Vitis workspace log file location: /home/juan/Documents/FPGA/TestP3_2_2/vitis_128_64/.metadata/.log
+Engine tmp dir: 	
+
+Xilinx Environment Variables
+----------------------------
+XILINX_DSP: 
+XILINX_HLS: /tools/Xilinx/Vitis_HLS/2021.2
+XILINX_PLANAHEAD: /tools/Xilinx/Vitis/2021.2
+XILINX_SDK: /tools/Xilinx/Vitis/2021.2
+XILINX_VITIS: /tools/Xilinx/Vitis/2021.2
+XILINX_VIVADO: /tools/Xilinx/Vivado/2021.2
+XILINX_VIVADO_HLS: /tools/Xilinx/Vivado/2021.2
+_RDI_DONT_SET_XILINX_AS_PATH: True
+
+
+Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
+
+*/
+
+selectButton("Next", "New Application Project (Create a New Application Project)", "NewAppProjectWizard", "Button.NEXT");
+selectTab("Create a new platform from hardware", "New Application Project (Platform)", "NewAppProjectWizard", "CTabItem.CREATE_A_NEW_PLATFORM");
+selectButton("Browse", "New Application Project (Platform)", "NewAppProjectWizard", "Button.BROWSE");
+cancelFileDialog("Create Platform from XSA", "SDXFileDialog", "Button.CANCEL");
+selectButton("Browse", "New Application Project (Platform)", "NewAppProjectWizard", "Button.BROWSE");
+setFileDialog("/home/juan/Documents/FPGA/TestP3_2_2/vitis_128_64/design_1_wrapper.xsa", "Create Platform from XSA", "SDXFileDialog", "Button.OK");
+selectButton("Next", "New Application Project (Platform)", "NewAppProjectWizard", "Button.NEXT");
+setTextField("ecu64test", "New Application Project (Application Project Details)", "NewAppProjectWizard", "Text.APPLICATION_PROJECT_NAME");
+selectButton("Next", "New Application Project (Application Project Details)", "NewAppProjectWizard", "Button.NEXT");
+selectButton("Next", "New Application Project (Domain)", "NewAppProjectWizard", "Button.NEXT");
+selectTreeTable("Empty Application", "Embedded software development templates", "New Application Project (Templates)", "NewAppProjectWizard", "TreeViewer.TemplateContentProvider");
+selectButton("Finish", "New Application Project (Templates)", "NewAppProjectWizard", "Button.FINISH");
+activateView("Explorer", "ProjectExplorer", "CTabItem.EXPLORER");
+activateView("ecu64test_system", "ecu64test_system/ecu64test_system.sprj", "SystemSettingsEditor", "CTabItem.ECU64TEST_SYSTEM");
+selectTreeTable("Includes", "ecu64test_system > ecu64test", "Explorer", "ProjectExplorer", "TreeViewer.NavigatorContentServiceContentProvider");
+selectTreeTable("src", "ecu64test_system > ecu64test", EventType.POPUP_TRIGGER_CLICK, "Explorer", "ProjectExplorer", "TreeViewer.NavigatorContentServiceContentProvider");
+selectMenuItem("New", "Explorer", "ProjectExplorer", "MenuItem.NEW");
+selectMenuItem("File", "ecu64test", "WorkbenchWindow", "MenuItem.FILE");
+selectButton("Finish", "Create New File (File)", "BasicNewFileResourceWizard", "Button.FINISH");
+activateView("Assistant", "SDXAssistantView", "CTabItem.ASSISTANT");
+selectToolBarButton("Build Debug for project ecu64test", "Assistant", "SDXAssistantView", "ToolItem.BUILD_DEBUG_FOR");
+activateView("Console", "ConsoleView", "CTabItem.CONSOLE");
+selectTreeTable("Debug", "ecu64test_system > ecu64test", "Assistant", "SDXAssistantView", "TreeViewer.NavigatorContentServiceContentProvider");
+activateView("Explorer", "ProjectExplorer", "CTabItem.EXPLORER");
+selectTreeTable("ecu64test", "ecu64test_system", EventType.POPUP_TRIGGER_CLICK, "Explorer", "ProjectExplorer", "TreeViewer.NavigatorContentServiceContentProvider");
+selectMenuItem("Run As", "Explorer", "ProjectExplorer", "MenuItem.RUN_AS");
+selectMenuItem("1 Launch Hardware", "ecu64test", "WorkbenchWindow", "MenuItem.1_LAUNCH_HARDWARE");
+selectButton("Exit", "Confirm Exit", "MessageDialogWithToggle", "Button.EXIT");
+// Exiting Xilinx Vitis with a status code '0' at 4/17/22, 4:08:35 PM CLT
+// Elapsed time: 00:40:15
+

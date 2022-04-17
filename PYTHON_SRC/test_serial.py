@@ -25,8 +25,8 @@ class zynqTest():
 
         while (line == None or line == "\n"):
             time.sleep(0.2)
-        y_sqrt, ticks = line.strip().split(":")[1].split(";")
-        return float(y_sqrt), float(ticks)
+        y_sqrt = line.strip().split(":")[1]
+        return float(y_sqrt)
 
     def generateVecs(self):
         res = 0
@@ -60,13 +60,11 @@ class zynqTest():
             self.sendVector(self.vectorConcat)
 
 
-            y_sqrt,ticks  = (self.recieveResult())
+            y_sqrt = (self.recieveResult())
 
             res_err = 100*abs((y_sqrt - self.expected)/self.expected)
 
             print("TRIAL", tst+1, "HARDWARE RESULT:", y_sqrt, "\t SOFTWARE RESULT: ", round(self.expected,4), end="")
-            print(" TICKS:", ticks)
-
             if (res_err > 1):
                 result+=1
                 print(" TRIAL FAILED")
@@ -80,7 +78,7 @@ class zynqTest():
 
 
 if __name__ == "__main__":
-    zynqDev = zynqTest('/dev/ttyUSB1', 115200, 1024, 10)
+    zynqDev = zynqTest('/dev/ttyUSB1', 115200, 128, 10)
 
     print("Listening...")
 
