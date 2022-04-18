@@ -4,30 +4,36 @@
 #include <xil_exception.h>
 #include "xeuchw.h"
 //#include <xil_printf.h>
-#include <xscutimer.h> //timer
-#include <unistd.h> // sleep
+
+#include <math.h>
+
+#include <xgpio.h> // axis gpio
 
 #define INTC_DEVICE_ID			XPAR_PS7_SCUGIC_0_DEVICE_ID
 #define XHLS_DEVICE_ID			XPAR_EUCHW_0_DEVICE_ID
 #define INTC_ADDT_INT_ID		XPAR_FABRIC_EUCHW_0_INTERRUPT_INTR
 #define xil_printf 				printf
 
-#define TIMER_IRPT_INTR		XPAR_SCUTIMER_INTR
-#define TIMER_DEVICE_ID		XPAR_XSCUTIMER_0_DEVICE_ID
-#define TIMER_IRPT_INTR		XPAR_SCUTIMER_INTR
-#define TIMER_LOAD_VALUE	0xFF
+#define TIMER_IRPT_INTR			XPAR_SCUTIMER_INTR
+#define TIMER_DEVICE_ID			XPAR_XSCUTIMER_0_DEVICE_ID
+#define TIMER_IRPT_INTR			XPAR_SCUTIMER_INTR
+#define TIMER_LOAD_VALUE		0xFF
+
+#define JBPMOD_DEVICE_ID			XPAR_XGPIOPS_0_DEVICE_ID
 
 #define N_VECTORS				10
 #define VECTOR_SIZE				2048// 2*1024
 #define BUFFER_SIZE				32
 #define BRAMS					64
 
+#define LENGTH 					1024
+
 enum errTypes
 {
 	ERR_HLS_INIT,
+	ERR_GPIO_INIT,
 	ERR_INTC_INIT,
-	ERR_DEFAULT,
-    ERR_TIMER_INIT
+	ERR_DEFAULT
 };
 enum IP_ready
 {
@@ -40,11 +46,13 @@ int errorHandler(enum errTypes err);
 void BTN_InterruptHandler(void *InsPtr);
 int TxDataSend(XEuchw *InstancePtr, u8 data[VECTOR_SIZE]);
 void AdderTreeReceiveHandler(void *InstPtr);
+double eucDistSW( u8 X[2*LENGTH]);
 
 XScuGic intc;
 XEuchw hls_ip;
-XScuTimer timer;
-XScuTimer *TimerInstancePtr = &timer;
+
+XGpio jb;
+
 volatile int ip_status;
 
 void (*XHLSWriteFunc[])() = { XEuchw_Write_x_0_Bytes,
@@ -71,9 +79,7 @@ void (*XHLSWriteFunc[])() = { XEuchw_Write_x_0_Bytes,
 			XEuchw_Write_x_61_Bytes, XEuchw_Write_x_62_Bytes, XEuchw_Write_x_63_Bytes};
 u8 TxData[BUFFER_SIZE];
 u32 RxData[1]; /* for uint as float version */
-/* Timer init *//////////////////////////////////////////////////////////
-volatile u8 ticks = 0;
-
+double RxDataSW;
 int TxDataSend(XEuchw *InstancePtr, u8 data[VECTOR_SIZE])
 {
 	int status = XST_SUCCESS;
@@ -90,22 +96,27 @@ int TxDataSend(XEuchw *InstancePtr, u8 data[VECTOR_SIZE])
 
 void AdderTreeReceiveHandler(void *InstPtr)
 {
-	//u32 results[1]; /* uint version */
-   float results[1]; /* float point version */
+	u32 results[1]; /* uint version */
+   //float results[1]; /* float point version */
    XEuchw_InterruptDisable(&hls_ip,1);
 
+   XGpio_DiscreteWrite(&jb, 1, 0b01);
+   XGpio_DiscreteWrite(&jb, 1, 0b00);
+
    RxData[0] = XEuchw_Get_y_sqrt(&hls_ip);
-	//results[0] = *((u32*) &(RxData[0])); /* uint version */
-   results[0] = *((float*) &(RxData[0])); /* float version */
 
-   //xil_printf("Resultados: %u ; %d\n", results[0], ticks); /* uint version */
+   results[0] = *((u32*) &(RxData[0])); /* uint version */
+   //results[0] = *((float*) &(RxData[0])); /* float version */
 
-   //ticks = XScuTimer_GetCounterValue(TimerInstancePtr); /* guarda el calculo de la latencia */
-   xil_printf("Resultados: %f ; %d\n", results[0], (0xFF-ticks)); /* float version */
+   XGpio_DiscreteWrite(&jb, 1, 0b01);
+   XGpio_DiscreteWrite(&jb, 1, 0b00);
+
+   xil_printf("Resultados: %u ; %f\n", results[0], RxDataSW); /* uint version */
+   //xil_printf("Resultados: %f\n", results[0]); /* float version */
 
    ip_status = IP_Ready;
-	XEuchw_InterruptClear(&hls_ip,1);
-	XEuchw_InterruptEnable(&hls_ip,1);
+   XEuchw_InterruptClear(&hls_ip,1);
+   XEuchw_InterruptEnable(&hls_ip,1);
 }
 
 void getVector(u8 vec[VECTOR_SIZE])
@@ -118,17 +129,9 @@ void getVector(u8 vec[VECTOR_SIZE])
 
 int main()
 {
-
-	/* Timer init *//////////////////////////////////////////////////////////
-	XScuTimer_Config *ConfigPtr;
-	///* Timer init *//////////////////////////////////////////////////////////
-	int status = XST_SUCCESS;
-	ConfigPtr = XScuTimer_LookupConfig(TIMER_DEVICE_ID);
-	status = XScuTimer_CfgInitialize(&timer, ConfigPtr, ConfigPtr->BaseAddr);
-	if (status != XST_SUCCESS) return errorHandler(ERR_TIMER_INIT);
-
 	/* INIT */
 	/* HLS IP init */
+	int status = XST_SUCCESS;
 	status += XEuchw_Initialize(&hls_ip, XHLS_DEVICE_ID);
 	if (status != XST_SUCCESS) return errorHandler(ERR_HLS_INIT);
 
@@ -136,28 +139,41 @@ int main()
 	status = IntcInitFunction(INTC_DEVICE_ID);
 	if (status != XST_SUCCESS) return errorHandler(ERR_INTC_INIT);
 
+	/* GPIO init */
+	status += XGpio_Initialize(&jb, JBPMOD_DEVICE_ID);
+	if (status != XST_SUCCESS) return errorHandler(ERR_GPIO_INIT);
+	XGpio_SetDataDirection(&jb, 1, 0x00);
+
 	//status = TimerSetupIntrSystem(ConfigPtr,TimerInstancePtr, TIMER_DEVICE_ID);
 	if (status != XST_SUCCESS) return XST_FAILURE;
 
 	ip_status = IP_Ready;
 	u8 txbuffer[VECTOR_SIZE];
-	XScuTimer_Start(TimerInstancePtr); /* inicializacion de timer */
+	XGpio_DiscreteWrite(&jb, 1, 0b00);
 
 	for (int trial = 0; trial < N_VECTORS; trial++ )
 	{
 		while (ip_status == IP_Busy) {};
 
-		XScuTimer_LoadTimer(TimerInstancePtr, TIMER_LOAD_VALUE); /* carga valor del timer a 0xFF */
-		ticks = XScuTimer_GetCounterValue(TimerInstancePtr);
-
 		getVector(txbuffer);
-		TxDataSend(&hls_ip, txbuffer);
-		ip_status = IP_Busy;
 
+		XGpio_DiscreteWrite(&jb, 1, 0b01);
+		XGpio_DiscreteWrite(&jb, 1, 0b00);
+
+		RxDataSW = eucDistSW(txbuffer);
+
+		XGpio_DiscreteWrite(&jb, 1, 0b11);
+		XGpio_DiscreteWrite(&jb, 1, 0b00);
+
+		TxDataSend(&hls_ip, txbuffer);
+
+		XGpio_DiscreteWrite(&jb, 1, 0b10);
+		XGpio_DiscreteWrite(&jb, 1, 0b00);
+
+		ip_status = IP_Busy;
 		XEuchw_Start(&hls_ip);
 	}
 
-	XScuTimer_Stop(TimerInstancePtr); /* termina */
 	while(1);
 
     return 0;
@@ -172,16 +188,16 @@ int errorHandler(enum errTypes err)
 			xil_printf("Error inicializando bloque HLS\n");
 			break;
 		}
+		case(ERR_GPIO_INIT):
+		{
+			xil_printf("Error inicializando GPIO\n");
+			break;
+		}
 		case(ERR_INTC_INIT):
 		{
 			xil_printf("Error inicializando INTC\n");
 			break;
 		}
-		case(ERR_TIMER_INIT):
-		{
-			xil_printf("Error inicializando Timer\n");
-		}
-
 		default:
 		{
 			xil_printf("Error en ejecucion\n");
@@ -221,3 +237,13 @@ int IntcInitFunction(u16 DeviceId)
 
 	return XST_SUCCESS;
 }
+
+double eucDistSW( u8 X[2*LENGTH]){
+
+    double sum = 0;
+    for (int i= 0; i < LENGTH; i++){
+            sum += (X[i]- X[i + LENGTH])*(X[i]- X[i+LENGTH]);
+    }
+    return sqrt(sum);
+}
+
