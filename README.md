@@ -1,6 +1,6 @@
 # Tarea 4 P3.2 IPD432
 
-Grupo Juan Aguilera - Ricardo Mardones
+### Grupo Juan Aguilera - Ricardo Mardones
 
 El propósito de este proyecto es el de ilustrar el proceso de diseño de un coprocesador que soporta el cálculo de la distancia euclidiana entre vectores de distinta cantidad de palabras de 8 bits cada una.
 El proyecto se desarrolló usando las siguientes herramientas:
@@ -17,8 +17,20 @@ Los tiempos estimados de síntesis e implementación fueron tomados operando en 
 * Procesador: Intel Core i7-10750H CPU @ 2.60GHz
 * Memoria (RAM): 12 GB @ 2933 MHz
 
-## Guía para replicar resulados para vector de 128 palabras de 8 bits ( versión <em> int </em> )
-### Procesador de vectores usando HLS para ZYBO
+### Guía para replicar resulados
+#### Procesador de vectores usando HLS para ZYBO
+##### Video tutorial
+
+<div align="center">
+      <a href="https://www.youtube.com/watch?v=QbYGrSMytgY">
+     <img
+      src="/Imagenes_Readme/Start_HLS.gif"
+      alt="Everything Is AWESOME"
+      style="width:70%;">
+      </a>
+    </div>
+
+#### Guía paso a paso
 
 Para reproducir la síntesis del coprocesador mediante Vitis HLS se utilizan los archivos fuente que se encuentran en  la carpeta ``` \VITIS_HLS_SRC``` dentro de este repositorio. Se deben seguir  las instrucciones descritas  a continuación:
 
@@ -33,7 +45,6 @@ Para reproducir la síntesis del coprocesador mediante Vitis HLS se utilizan los
 
 * Conservar la configuración por defecto en la sección ```Flow Target``` y hacer click en el botón ```Finish ```.
 
-![Device part.](/Imagenes_Readme/Start_HLS.gif)
 
 * Sintetizar el proyecto haciendo click en el botón ```Run``` de la barra superior del Software o  ```Run C Synthesis ``` ubicado en la sección ```Flow Navigator```.
 
