@@ -22,7 +22,7 @@ Los tiempos estimados de síntesis e implementación fueron tomados operando en 
 ##### Video tutorial
 
 <div align="center">
-      <a href="https://www.youtube.com/watch?v=QbYGrSMytgY">
+      <a href="https://www.youtube.com/watch?v=naCnj8evohE">
      <img
       src="/Imagenes_Readme/Start_HLS.gif"
       alt="Everything Is AWESOME"
