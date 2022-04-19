@@ -9,9 +9,10 @@
  */
 void eucHW(Tout *y_sqrt, T x[2*LENGTH])
 {
-	#pragma HLS INTERFACE mode=s_axilite port=x storage_impl=bram /* Interface mode s_axislite
-																	permite el uso de el protocolo de comunicacion AXIS
-																	para los puertos especificados */
+	#pragma HLS INTERFACE mode=s_axilite port=x storage_impl=bram  /* Interface mode s_axislite
+																	* permite el uso de el protocolo de comunicación AXIS
+																	* para los puertos especificados
+																	*/
 	#pragma HLS INTERFACE mode=s_axilite port=y_sqrt
 	#pragma HLS INTERFACE mode=s_axilite port=return
 	#pragma HLS ARRAY_PARTITION variable=x type=cyclic factor=64
@@ -20,13 +21,14 @@ void eucHW(Tout *y_sqrt, T x[2*LENGTH])
 	MainLoop: for (int i = 0; i < LENGTH; ++i)
 	{
 		#pragma HLS UNROLL factor=64
-		#pragma HLS PIPELINE ii=2  /* asegura trabajar con el pipeline lleno . */
-		res += (x[i+ LENGTH] -x[i])*(x[i+ LENGTH] -x[i]); /* res almacena la suma de el cuadrado de la
-															diferencia entre el vector A ( primera mitad
-															del vector x) y B (segunda mitad del vector x) */
+		#pragma HLS PIPELINE ii=2  									/* Asegura trabajar con el pipeline lleno .*/
+		res += (x[i+ LENGTH] -x[i])*(x[i+ LENGTH] -x[i]); 			/* res almacena la suma del cuadrado de la
+																	 * diferencia entre el vector A ( primera mitad
+																	 * del vector x) y B (segunda mitad del vector x)
+																	 */
 	}
 
-	//*y_sqrt = sqrt(res); /* raiz cuadrada para numeros de punto flotante */
-	*y_sqrt = hls::sqrt(res); /* raiz cuadrada para numeros enteros sin signo */
+	//*y_sqrt = sqrt(res); 											 /* raiz cuadrada para números de punto flotante */
+	*y_sqrt = hls::sqrt(res); 										 /* raíz cuadrada para números enteros sin signo */
 	return;
 }

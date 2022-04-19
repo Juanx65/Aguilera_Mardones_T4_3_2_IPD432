@@ -93,8 +93,10 @@ cambiar imagen ajaj
 
 #### Uso de pragmas en Vitis HLS
 
-En esta sección se explica el uso de los pragmas implementados al realizar la sección anterior, siguiendo la función definida en ```\SRC_VITIS_HLS\EucHW.cpp```, que se muestra a continuación:
+En esta sección se explica el uso de los pragmas implementados al realizar la sección anterior, siguiendo la función definida en \SRC_VITIS_HLS\EucHW.cpp.
 
+* ```pragma ARRAY_PARTITION``` Este comando separa un arreglo de datos y genera arreglos más pequeños o de un solo elemento almacenandolos en bloques de memoria RAM individuales.
+* ```pragma INTERFACE``` escribir algo porfavor ... :(
 ```cpp
 void eucHW(Tout *y_sqrt, T x[2*LENGTH])
 {
