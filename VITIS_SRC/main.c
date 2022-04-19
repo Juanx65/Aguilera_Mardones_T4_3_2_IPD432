@@ -14,19 +14,14 @@
 #define INTC_ADDT_INT_ID		XPAR_FABRIC_EUCHW_0_INTERRUPT_INTR
 #define xil_printf 				printf
 
-#define TIMER_IRPT_INTR			XPAR_SCUTIMER_INTR
-#define TIMER_DEVICE_ID			XPAR_XSCUTIMER_0_DEVICE_ID
-#define TIMER_IRPT_INTR			XPAR_SCUTIMER_INTR
-#define TIMER_LOAD_VALUE		0xFF
-
 #define JBPMOD_DEVICE_ID			XPAR_XGPIOPS_0_DEVICE_ID
 
 #define N_VECTORS				10
-#define VECTOR_SIZE				2048// 2*1024
-#define BUFFER_SIZE				32
+#define VECTOR_SIZE				2*1024		/* para vector de 1024 palabras */
+//#define VECTOR_SIZE				128*2   /* para vector de 128 palabras */
+#define BUFFER_SIZE				32				/* para vector de 1024 palabras */
+//#define BUFFER_SIZE				4				/* para vector de 128 palabras */
 #define BRAMS					64
-
-#define LENGTH 					1024
 
 enum errTypes
 {
@@ -96,8 +91,8 @@ int TxDataSend(XEuchw *InstancePtr, u8 data[VECTOR_SIZE])
 
 void AdderTreeReceiveHandler(void *InstPtr)
 {
-	u32 results[1]; /* uint version */
-   //float results[1]; /* float point version */
+	//u32 results[1]; /* uint version */
+   float results[1]; /* float point version */
    XEuchw_InterruptDisable(&hls_ip,1);
 
    XGpio_DiscreteWrite(&jb, 1, 0b01);
@@ -105,14 +100,14 @@ void AdderTreeReceiveHandler(void *InstPtr)
 
    RxData[0] = XEuchw_Get_y_sqrt(&hls_ip);
 
-   results[0] = *((u32*) &(RxData[0])); /* uint version */
-   //results[0] = *((float*) &(RxData[0])); /* float version */
+   //results[0] = *((u32*) &(RxData[0])); /* uint version */
+   results[0] = *((float*) &(RxData[0])); /* float version */
 
    XGpio_DiscreteWrite(&jb, 1, 0b01);
    XGpio_DiscreteWrite(&jb, 1, 0b00);
 
-   xil_printf("Resultados: %u ; %f\n", results[0], RxDataSW); /* uint version */
-   //xil_printf("Resultados: %f\n", results[0]); /* float version */
+   //xil_printf("Resultados: %u ; %f\n", results[0], RxDataSW); /* uint version */
+   xil_printf("Resultados: %f ; %f\n", results[0], RxDataSW); /* float version */
 
    ip_status = IP_Ready;
    XEuchw_InterruptClear(&hls_ip,1);
@@ -238,12 +233,11 @@ int IntcInitFunction(u16 DeviceId)
 	return XST_SUCCESS;
 }
 
-double eucDistSW( u8 X[2*LENGTH]){
+double eucDistSW( u8 X[VECTOR_SIZE]){
 
     double sum = 0;
     for (int i= 0; i < LENGTH; i++){
-            sum += (X[i]- X[i + LENGTH])*(X[i]- X[i+LENGTH]);
+            sum += (X[i]- X[i + VECTOR_SIZE/2])*(X[i]- X[i+VECTOR_SIZE/2]);
     }
     return sqrt(sum);
 }
-
