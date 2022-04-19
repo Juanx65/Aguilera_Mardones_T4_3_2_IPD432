@@ -1,5 +1,6 @@
 #include <iostream>
 #include <math.h>
+#include <cmath>
 #include "specs.h"
 #include "eucHW.h"
 #include "eucSW.h"
@@ -7,17 +8,18 @@
 using namespace std;
 
 void genRandArray(int min, int max, int size, T *array);
-int compare(Tout* gold, Tout* result, int size, double th);
+int compare(float* gold, Tout* result, int size, double th);
 
 int main (){
 	int errors = 0;
 	int tests = 100;
 
 	T A[LENGTH], B[LENGTH];
-	Tout C_HW[1], C_SW[1];
+	Tout C_HW[1];
+	float C_SW[1];
 
 	double diff;
-	double th = 0.000001;
+	double th = 0.9;
 	int min = 0;
 	int max = 254;
 	cout << "Euc Dist calculation: "<< endl;
@@ -25,8 +27,15 @@ int main (){
 		genRandArray(min, max, LENGTH, A);
 		genRandArray(min, max, LENGTH, B);
 
+		int m = sizeof(A) / sizeof(*A);
+		int n = sizeof(B) / sizeof(*B);
+
+		T x[m + n];
+		memcpy(x, A, sizeof(A));
+		memcpy(x + m, B, sizeof(B));
+
 		eucSW (A, B, C_SW);
-		eucHW (A, B, C_HW);
+		eucHW (C_HW, x);
 
 		errors += compare(C_SW, C_HW, 1, th);
 		cout << "C_SW: " << C_SW[0] << ", C_HW: " << C_HW[0] << endl;
@@ -45,7 +54,7 @@ void genRandArray(int min, int max, int size, T *array){
     }
 }
 
-int compare(Tout* gold, Tout* result, int size, double th){
+int compare(float* gold, Tout* result, int size, double th){
         int errors = 0;
         double dif = 0;
         for (int i=0; i<size; i++){

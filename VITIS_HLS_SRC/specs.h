@@ -5,9 +5,8 @@
 #import <cstdint>
 #include "ap_int.h"
 
-
-//typedef float Tout;         /* Version punto flotante */
-typedef uint32_t Tout;        /* Version entero sin signo */
+typedef float Tout;         /* Version punto flotante */
+//typedef uint32_t Tout;        /* Version entero sin signo */
 
 typedef uint8_t T;            /* Tipo de variable de vectores de entradad */
 
