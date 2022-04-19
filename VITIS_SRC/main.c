@@ -18,9 +18,9 @@
 
 #define N_VECTORS				10
 #define VECTOR_SIZE				2*1024		/* para vector de 1024 palabras */
-//#define VECTOR_SIZE				128*2   /* para vector de 128 palabras */
-#define BUFFER_SIZE				32				/* para vector de 1024 palabras */
-//#define BUFFER_SIZE				4				/* para vector de 128 palabras */
+//#define VECTOR_SIZE			128*2   	/* para vector de 128 palabras */
+#define BUFFER_SIZE				32			/* para vector de 1024 palabras */
+//#define BUFFER_SIZE			4		/* para vector de 128 palabras */
 #define BRAMS					64
 
 enum errTypes
@@ -41,7 +41,7 @@ int errorHandler(enum errTypes err);
 void BTN_InterruptHandler(void *InsPtr);
 int TxDataSend(XEuchw *InstancePtr, u8 data[VECTOR_SIZE]);
 void AdderTreeReceiveHandler(void *InstPtr);
-double eucDistSW( u8 X[2*LENGTH]);
+double eucDistSW( u8 X[VECTOR_SIZE]);
 
 XScuGic intc;
 XEuchw hls_ip;
@@ -236,7 +236,7 @@ int IntcInitFunction(u16 DeviceId)
 double eucDistSW( u8 X[VECTOR_SIZE]){
 
     double sum = 0;
-    for (int i= 0; i < LENGTH; i++){
+    for (int i= 0; i < VECTOR_SIZE/2; i++){
             sum += (X[i]- X[i + VECTOR_SIZE/2])*(X[i]- X[i+VECTOR_SIZE/2]);
     }
     return sqrt(sum);
