@@ -22,11 +22,11 @@ Los tiempos estimados de síntesis e implementación fueron tomados operando en 
 ##### Video tutorial
 
 <div align="center">
-      <a href="https://www.youtube.com/watch?v=naCnj8evohE">
+      <a href="https://www.youtube.com/watch?v=BcKH4BeqSr0">
      <img
-      src="/Imagenes_Readme/Start_HLS.gif"
-      alt="Everything Is AWESOME"
-      style="width:70%;">
+      src="/Imagenes_Readme/vitis_hls_youtube.png"
+      alt="Tutoral VITIS HLS"
+      style="width:80%;">
       </a>
 </div>
 
@@ -123,17 +123,34 @@ void eucHW(Tout *y_sqrt, T x[2*LENGTH])
 ##### Video tutorial
 
 <div align="center">
-      <a href="https://www.youtube.com/watch?v=QbYGrSMytgY">
+      <a href="https://www.youtube.com/watch?v=47fFncKo3N0">
      <img
-      src="/Imagenes_Readme/Start_HLS.gif"
-      alt="Everything Is AWESOME"
-      style="width:70%;">
+      src="/Imagenes_Readme/vivado_youtube.png"
+      alt="Tutorial VIVADO"
+      style="width:80%;">
       </a>
 </div>
 
 ##### Guía paso a paso
 
  Adicionalmente, se programó el script de Python ``` \PYTHON_SRC\serial_test.py ``` donde se generan 1000 instancias de prueba, donde llegamos a un error promedio de 0.24, el cual es menor al 1% de error promedio.
+ 
+#### Implementación usando Vitis
+
+##### Video tutorial
+
+<div align="center">
+      <a href="https://www.youtube.com/watch?v=YKQXbtaWfqE">
+     <img
+      src="/Imagenes_Readme/vitis_youtube.png"
+      alt="Tutorial VITIS"
+      style="width:80%;">
+      </a>
+</div>
+
+##### Guía paso a paso
+
+
 
 #### Reporte de frecuencia, latencia y throughtput
 
