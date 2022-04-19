@@ -28,7 +28,7 @@ void eucHW(Tout *y_sqrt, T x[2*LENGTH])
 																	 */
 	}
 
-	//*y_sqrt = sqrt(res); 											 /* raiz cuadrada para números de punto flotante */
+	//*y_sqrt = sqrt((long double)res); 											 /* raiz cuadrada para números de punto flotante */
 	*y_sqrt = hls::sqrt(res); 										 /* raíz cuadrada para números enteros sin signo */
 	return;
 }
