@@ -2,12 +2,12 @@
 
 ### Grupo Juan Aguilera - Ricardo Mardones
 
-El propósito de este proyecto es el de ilustrar el proceso de diseño de un coprocesador que soporta el cálculo de la distancia euclidiana entre vectores de distinta cantidad de palabras de 8 bits cada una.
+El propósito de este proyecto es el de ilustrar el proceso de diseño de un coprocesado en un diseño SoC (ZYBO), con el fin de comparar rendimientos entre lo implementado en Programmable Logic (PL)(FPGA) y en Processing Subsystem (PS)(ZYNQ7).
 El proyecto se desarrolló usando las siguientes herramientas:
 
-* Software  Vitis HLS 2021.1
-* Software  Vitis 2021.1
-* Software Vivado 2021.1
+* Software  Vitis HLS 2021.2
+* Software  Vitis 2021.2
+* Software Vivado 2021.2
 * Tarjeta de desarrollo ZYBO
 
 El sistema operativo utilizado fue Windows 10 /  Windwos 11 / Manjaro Linux (Gnome 41.3).
