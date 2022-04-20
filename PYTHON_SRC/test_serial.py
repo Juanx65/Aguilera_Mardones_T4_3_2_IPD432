@@ -35,8 +35,8 @@ class zynqTest():
         self.vectorB = []
 
         for i in range(self.vectorSize):
-            randA = randint(0,1020)
-            randB = randint(0,1020)
+            randA = randint(-1020,1020)
+            randB = randint(-1020,1020)
 
             self.vectorA.append(randA)
             self.vectorB.append(randB)

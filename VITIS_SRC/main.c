@@ -42,7 +42,7 @@ int IntcInitFunction(u16 DeviceId);
 int errorHandler(enum errTypes err);
 void BTN_InterruptHandler(void *InsPtr);
 int TxDataSend(XEuchw *InstancePtr, T_in data[VECTOR_SIZE]);
-void AdderTreeReceiveHandler(void *InstPtr);
+void reciveHandler(void *InstPtr);
 double eucDistSW( T_in X[VECTOR_SIZE]);
 
 XScuGic intc;
@@ -81,7 +81,7 @@ int TxDataSend(XEuchw *InstancePtr, T_in data[VECTOR_SIZE])
 	return status;
 }
 
-void AdderTreeReceiveHandler(void *InstPtr)
+void reciveHandler(void *InstPtr)
 {
    T_in results[1];
    XEuchw_InterruptDisable(&hls_ip,1);
@@ -92,7 +92,7 @@ void AdderTreeReceiveHandler(void *InstPtr)
    RxData[0] = XEuchw_Get_y_sqrt(&hls_ip);
    results[0] = *((T_in*) &(RxData[0]));
 
-   XGpio_DiscreteWrite(&jb, 1, 0b01);
+   XGpio_DiscreteWrite(&jb, 1, 0b11);
    XGpio_DiscreteWrite(&jb, 1, 0b00);
 
    xil_printf("Resultados: %d ; %f\n", results[0], RxDataSW); /* uint version */
@@ -151,9 +151,6 @@ int main()
 
 		TxDataSend(&hls_ip, txbuffer);
 
-		XGpio_DiscreteWrite(&jb, 1, 0b10);
-		XGpio_DiscreteWrite(&jb, 1, 0b00);
-
 		ip_status = IP_Busy;
 		XEuchw_Start(&hls_ip);
 	}
@@ -209,7 +206,7 @@ int IntcInitFunction(u16 DeviceId)
 
 	status = XScuGic_Connect(&intc,
 							 INTC_ADDT_INT_ID,
-							 (Xil_ExceptionHandler)AdderTreeReceiveHandler,
+							 (Xil_ExceptionHandler)reciveHandler,
 							 (void *) (&hls_ip));
 
 	// Enable GPIO interrupts interrupt
@@ -230,7 +227,3 @@ double eucDistSW( T_in X[VECTOR_SIZE]){
     }
     return sqrt(sum);
 }
-
-
-
-
