@@ -2,7 +2,7 @@
 
 ### Grupo Juan Aguilera - Ricardo Mardones
 
-El propósito de este proyecto es el de ilustrar el proceso de diseño de un coprocesado en un diseño SoC (ZYBO), con el fin de comparar rendimientos entre lo implementado en Programmable Logic (PL)(FPGA) y en Processing Subsystem (PS)(ZYNQ7).
+El propósito de este proyecto es el de ilustrar el proceso de diseño de un coprocesador en un sistema SoC (ZYBO), con el fin de comparar/caracterizar la latencia entre una implementación en Programmable Logic (PL)(FPGA) y una exclusivamente en Processing Subsystem (PS)(ZYNQ7).
 El proyecto se desarrolló usando las siguientes herramientas:
 
 * Software  Vitis HLS 2021.2
@@ -18,7 +18,7 @@ Los tiempos estimados de síntesis e implementación fueron tomados operando en 
 * Memoria (RAM): 12 GB @ 2933 MHz
 
 ### Guía para replicar resulados
-#### Coprocesador de vectores usando HLS para ZYBO
+#### Coprocesador de vectores PL usando HLS para ZYBO
 ##### Video tutorial
 
 <div align="center">
@@ -39,7 +39,7 @@ Para reproducir la síntesis del coprocesador mediante Vitis HLS se utilizan los
 * Añadir los archivos fuente correspondientes a archivos de diseño, estos son ```EucHW.cpp```, ```EucHW.h``` y  ```specs.h```. En esta misma ventana se debe definir la función principal, en este caso, ```EucHW```. Luego  hacer click en  el botón ```Next > ```.
 * Añadir los archivos fuente correspondientes a archivos de <em>testbench</em>, estos son ```EucSW.cpp```, ```EucSW.h``` y  ```EucTB.cpp```. Luego  hacer click en  el botón ```Next > ```.
 
-* Elegir nombre para la solución, escoger el periodo del reloj a utilizar en la síntesis (se conserva el valor por defecto de 10 ns para obtener un estimado del <em>timing</em> comparable con el esperado al cargar el diseño en la taejta).
+* Elegir nombre para la solución, escoger el periodo del reloj a utilizar en la síntesis (se conserva el valor por defecto de 10 ns para obtener un estimado del <em>timing</em> comparable con el esperado al cargar el diseño en la tarjeta).
 
 * En la sección ```Part Selection```, ```Parts```, especificar la tarjeta en la cual se implementará el diseño, en este caso  ```XC7Z010CLG400-1```.
 
@@ -47,9 +47,9 @@ Para reproducir la síntesis del coprocesador mediante Vitis HLS se utilizan los
 
 ##### Tamaño del vectores de entrada y tipo de variable de salida
 
-Para esta experiencia se busca experimentar con distintos tamaños de vectores, así como con distintos tipos de variables resultante, por lo que, modificando el codigo fuente en ``` \VITIS_HLS_SRC\specs.h``` se puede configurar los parametros para obtener el diseño deseado.
+Para esta experiencia se busca experimentar con distintos tamaños de vectores, así como con distintos tipos de variables resultantes, por lo que, modificando el código fuente en ``` \VITIS_HLS_SRC\specs.h```, se puede configurar los parámetros para obtener el diseño deseado.
 
-* Para vectores de tamaño 1024 palabras entre las lineas 14 y 18 dejar de la siguiente forma
+* Para vectores de tamaño 1024 palabras entre las líneas 14 y 18 dejar de la siguiente forma
 ```c
 typedef ap_uint<26> T_int;    /* Tipo variable intermedia para 1024 palabras* /
 //typedef ap_uint<23> T_int;  /* Tipo variable intermedia para 128 palabras */
@@ -65,7 +65,7 @@ typedef ap_uint<23> T_int;  /* Tipo variable intermedia para 128 palabras */
 #define LENGTH 128          /* Largo de vectores para 128 palabras */
 ```
 
-* Para operar con resultado sin signo entero de 32 bits entre las lineas 9 y 10
+* Para operar con resultado sin signo entero de 32 bits entre las líneas 9 y 10
 ```c
 //typedef float Tout;         /* Version punto flotante */
 typedef uint32_t Tout;        /* Version entero sin signo */
@@ -83,7 +83,7 @@ El proceso de síntesis es el mismo para todos los diseños a implementar.
 
  Si todo ha ido como corresponde, la síntesis debiese entregar resultados satisfactorios cumpliendo con las restricciones de <em>timing</em> (sin <em>slack</em> negativo), y un uso de recursos  fisicamente implementable en la tarjeta de desarrollo a utilizar.
 
- En la Figura a continuación se muestra los resultados de sintesis para 1024 palabras para un resultado del tipo entero sin signo de 32 bits:
+ En la Figura a continuación se muestra los resultados de síntesis para 1024 palabras con un resultado del tipo entero sin signo de 32 bits:
 
 ![Device part.](/Imagenes_Readme/performance_hls.png)
 
@@ -93,7 +93,7 @@ El proceso de síntesis es el mismo para todos los diseños a implementar.
 
 #### Uso de pragmas en Vitis HLS
 
-En esta sección se explica el uso de los pragmas implementados al realizar la sección anterior, siguiendo la función definida en \SRC_VITIS_HLS\EucHW.cpp.
+En esta sección se explica el uso de los pragmas implementados al realizar la sección anterior, siguiendo la función definida en ```\SRC_VITIS_HLS\EucHW.cpp```.
 
 * ```pragma ARRAY_PARTITION``` Este comando separa un arreglo de datos y genera arreglos más pequeños o de un solo elemento almacenandolos en bloques de memoria RAM individuales.
  Sintaxis:
@@ -131,7 +131,7 @@ void eucHW(Tout *y_sqrt, T x[2*LENGTH])
 }
 ```
 
-#### Implementación usando Vivado
+#### Implementación de comprocesador en PL usando Vivado
 
 ##### Video tutorial
 
@@ -147,10 +147,10 @@ void eucHW(Tout *y_sqrt, T x[2*LENGTH])
 ##### Guía paso a paso
 
 
-Para cualquier diseño de coprocesador que se desee implementar, los pasos a seguir son equivalentes, solo debe importar el repositoro IP deseado:
+Para cualquier diseño de coprocesador que se desee implementar, los pasos a seguir son equivalentes, solo debe importar el repositorio IP deseado:
 * Abrir Vivado y crear un nuevo proyecto con ```Create Project```.
 * En la sección ```Project name``` elegir un nombre y directorio para el proyecto. Avanzar.
-* En la secció ```Project type``` conservar las configuraciones  ```RTL project``` y todas las demas casillas desmarcadas.
+* En la sección ```Project type``` conservar las configuraciones  ```RTL project``` y todas las demas casillas desmarcadas.
 * En ```Add Source``` click en siguiente (no se necesitan fuentes para este proyecto).
 * En ```Add Constraints``` click en  ```Add File``` y seleccionar el archivo ```zybo.XDC``` presente en el respoitorio.
 * En ```Default Part```, ```Boards``` elegir ```ZYBO```, si es necesario, descargar y Finalizar.
@@ -162,10 +162,10 @@ Para cualquier diseño de coprocesador que se desee implementar, los pasos a seg
   * AXI GPIO -> Re-customize IP:
     * IP Configuration, All Output ; GPIO Width = 2 ; Enable Interrupts.
   * Concat.
-  * Pueto de salida jb -> Design, click derecho, Create Port:
+  * jb (puerto de salida Pmod) -> Design, click derecho, Create Port:
    * Port name = jb; Direction = output; Type = Data; Create vector: from 1 to 0.
 * Abrir Flow Navigator, Project Manager, IP Catalog y con click derecho en este abrir la opción ```Add Repository``` y añadir el bloque ip para el diseño de coprocesador deseado, los cuales se encuentran en la carpeta ```IP_SRC``` de este repositorio.
-* Conectar manualmente los sigueintes puertos :
+* Conectar manualmente los siguientes puertos:
   * Puerto jb[1:0] con la salida de AXI GPIO, gpio_io_o[1:0].
   * ip2intc_irpt de AXI GPIO con una de las entradas del modulo Concat.
   * interrupt del bloque Euchw a una de las entradas del modulo Concat.
@@ -174,9 +174,9 @@ Para cualquier diseño de coprocesador que se desee implementar, los pasos a seg
 * Verificar el diseño con ```Validate Design``` (dos veces si es necesario).
 * En Soruce, click derecho en design_1, Create HDL Wrapper, Let Vivado manage wrapper and auto-update, OK.
 * En Flow Navigator, Program and debug, Generar bitstream.
-* En File, Export, Export hardware, Include bitstream, elige nombre y carpeta de desitno.
+* En File, Export, Export hardware, Include bitstream, elige nombre y carpeta de destino.
 
-#### Implementación usando Vitis
+#### Implementación de coprocesador PL en Vitis IDE
 
 ##### Video tutorial
 
@@ -197,6 +197,23 @@ Para la implementacion en la zybo de cualquiera de los coprocesadores disenados,
 * etc
 
 Adicionalmente, se programó el script de Python ``` \PYTHON_SRC\serial_test.py ``` donde se generan 1000 instancias de prueba, donde llegamos a un error promedio de 0.24, el cual es menor al 1% de error promedio.
+
+#### Implementación PS en Vitis IDE
+
+Para implementar la operación de la distancia euclidiana entre los vectores de entrada se creo la siguiente función en C dentro de el archivo fuente ```main.c``` .
+
+```c
+double eucDistSW( u8 X[VECTOR_SIZE]){
+
+    double sum = 0;
+    for (int i= 0; i < VECTOR_SIZE/2; i++){
+            sum += (X[i]- X[i + VECTOR_SIZE/2])*(X[i]- X[i+VECTOR_SIZE/2]);
+    }
+    return sqrt(sum);
+}
+```
+
+La cual recibe los vectores de entrada concatenados en ```X``` y realiza la operación correspondiente.
 
 #### Reporte de frecuencia, latencia y throughtput
 
