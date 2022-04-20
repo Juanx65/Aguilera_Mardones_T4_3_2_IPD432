@@ -70,13 +70,22 @@ typedef ap_uint<23> T_int;  /* Tipo variable intermedia para 128 palabras */
 //typedef float Tout;         /* Version punto flotante */
 typedef uint32_t Tout;        /* Version entero sin signo */
 ```
+ En el archivo ```\VITS_HLS_SCR\eucHW.cpp``` dejar descomentada la asignación de la variable de salida en las líneas 31-32 de la siguiente manera
+ ```c
+ //*y_sqrt = sqrt((long double)res); 	/* raiz cuadrada para números de punto flotante */
+*y_sqrt = hls::sqrt(res); 	/* raíz cuadrada para números enteros sin signo */
+ ```
 
 * Para operar con resultado del tipo punto flotante de precisión simple:
 ```c
 typedef float Tout;         /* Version punto flotante */
 //typedef uint32_t Tout;        /* Version entero sin signo */
 ```
-
+ En el archivo ```\VITS_HLS_SCR\eucHW.cpp``` dejar descomentada la asignación de la variable de salida en las líneas 31-32 de la siguiente manera
+ ```c
+ *y_sqrt = sqrt((long double)res); 	/* raiz cuadrada para números de punto flotante */
+//*y_sqrt = hls::sqrt(res); 	/* raíz cuadrada para números enteros sin signo */
+ ```
 ##### Síntesis  
 El proceso de síntesis es el mismo para todos los diseños a implementar.
 * Sintetizar el proyecto haciendo click en el botón ```Run``` de la barra superior del Software o  ```Run C Synthesis ``` ubicado en la sección ```Flow Navigator```.
