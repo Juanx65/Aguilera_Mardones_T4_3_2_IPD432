@@ -147,7 +147,7 @@ void eucHW(Tout *y_sqrt, T x[2*LENGTH])
 ##### Guía paso a paso
 
 
-Para cualquier diseno de coprocesador que se desee implementar, los pasos a seguir son equivalentes:
+Para cualquier diseño de coprocesador que se desee implementar, los pasos a seguir son equivalentes, solo debe importar el repositoro IP deseado:
 * Abrir Vivado y crear un nuevo proyecto con ```Create Project```.
 * En la sección ```Project name``` elegir un nombre y directorio para el proyecto. Avanzar.
 * En la secció ```Project type``` conservar las configuraciones  ```RTL project``` y todas las demas casillas desmarcadas.
@@ -157,11 +157,11 @@ Para cualquier diseno de coprocesador que se desee implementar, los pasos a segu
 * En ```Flow navigator```, ```IP INTEGRATOR``` seleccionar ```Create Block Design```.
 * Una vez abierto, añadir los siguientes componentes con sus respectivas configuraciones:
   * ZYNQ7 Processing System -> Re-customize IP:
-    * Interrupts, Fabric Interrupts, PL-PS Interrupt Ports, IRQ_F2P
-    * Clock Configuration, Input Frequency (MHz) = 60, PL Fabric Clocks, FCLK_CLK0 = 100
+    * Interrupts, Fabric Interrupts, PL-PS Interrupt Ports, IRQ_F2P.
+    * Clock Configuration, Input Frequency (MHz) = 60, PL Fabric Clocks, FCLK_CLK0 = 100.
   * AXI GPIO -> Re-customize IP:
-    * IP Configuration, All Output ; GPIO Width = 2 ; Enable Interrupts
-  * Concat
+    * IP Configuration, All Output ; GPIO Width = 2 ; Enable Interrupts.
+  * Concat.
   * Pueto de salida jb -> Design, click derecho, Create Port:
    * Port name = jb; Direction = output; Type = Data; Create vector: from 1 to 0.
 * Abrir Flow Navigator, Project Manager, IP Catalog y con click derecho en este abrir la opción ```Add Repository``` y añadir el bloque ip para el diseño de coprocesador deseado, los cuales se encuentran en la carpeta ```IP_SRC``` de este repositorio.
@@ -174,7 +174,7 @@ Para cualquier diseno de coprocesador que se desee implementar, los pasos a segu
 * Verificar el diseño con ```Validate Design``` (dos veces si es necesario).
 * En Soruce, click derecho en design_1, Create HDL Wrapper, Let Vivado manage wrapper and auto-update, OK.
 * En Flow Navigator, Program and debug, Generar bitstream.
-* En File, Exportar hardware.
+* En File, Export, Export hardware, Include bitstream, elige nombre y carpeta de desitno.
 
 #### Implementación usando Vitis
 
