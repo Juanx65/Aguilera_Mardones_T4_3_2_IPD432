@@ -19,9 +19,9 @@
 #define N_VECTORS				10
 #define VECTOR_SIZE				2*1024		/* para vector de 1024 palabras */
 //#define VECTOR_SIZE			128*2   	/* para vector de 128 palabras */
-#define BUFFER_SIZE				32			/* para vector de 1024 palabras */
+#define BUFFER_SIZE				64			/* para vector de 1024 palabras */
 //#define BUFFER_SIZE			4		/* para vector de 128 palabras */
-#define BRAMS					64
+#define BRAMS					32
 
 enum errTypes
 {
@@ -36,12 +36,14 @@ enum IP_ready
 	IP_Busy
 };
 
+typedef int T_in;
+
 int IntcInitFunction(u16 DeviceId);
 int errorHandler(enum errTypes err);
 void BTN_InterruptHandler(void *InsPtr);
-int TxDataSend(XEuchw *InstancePtr, u8 data[VECTOR_SIZE]);
+int TxDataSend(XEuchw *InstancePtr, T_in data[VECTOR_SIZE]);
 void AdderTreeReceiveHandler(void *InstPtr);
-double eucDistSW( u8 X[VECTOR_SIZE]);
+double eucDistSW( T_in X[VECTOR_SIZE]);
 
 XScuGic intc;
 XEuchw hls_ip;
@@ -50,39 +52,29 @@ XGpio jb;
 
 volatile int ip_status;
 
-void (*XHLSWriteFunc[])() = { XEuchw_Write_x_0_Bytes,
-			XEuchw_Write_x_1_Bytes, XEuchw_Write_x_2_Bytes, XEuchw_Write_x_3_Bytes,
-			XEuchw_Write_x_4_Bytes, XEuchw_Write_x_5_Bytes, XEuchw_Write_x_6_Bytes,
-			XEuchw_Write_x_7_Bytes, XEuchw_Write_x_8_Bytes, XEuchw_Write_x_9_Bytes,
-			XEuchw_Write_x_10_Bytes, XEuchw_Write_x_11_Bytes, XEuchw_Write_x_12_Bytes,
-			XEuchw_Write_x_13_Bytes, XEuchw_Write_x_14_Bytes, XEuchw_Write_x_15_Bytes,
-			XEuchw_Write_x_16_Bytes, XEuchw_Write_x_17_Bytes, XEuchw_Write_x_18_Bytes,
-			XEuchw_Write_x_19_Bytes, XEuchw_Write_x_20_Bytes, XEuchw_Write_x_21_Bytes,
-			XEuchw_Write_x_22_Bytes, XEuchw_Write_x_23_Bytes, XEuchw_Write_x_24_Bytes,
-			XEuchw_Write_x_25_Bytes, XEuchw_Write_x_26_Bytes, XEuchw_Write_x_27_Bytes,
-			XEuchw_Write_x_28_Bytes, XEuchw_Write_x_29_Bytes, XEuchw_Write_x_30_Bytes,
-			XEuchw_Write_x_31_Bytes, XEuchw_Write_x_32_Bytes, XEuchw_Write_x_33_Bytes,
-			XEuchw_Write_x_34_Bytes, XEuchw_Write_x_35_Bytes, XEuchw_Write_x_36_Bytes,
-			XEuchw_Write_x_37_Bytes, XEuchw_Write_x_38_Bytes, XEuchw_Write_x_39_Bytes,
-			XEuchw_Write_x_40_Bytes, XEuchw_Write_x_41_Bytes, XEuchw_Write_x_42_Bytes,
-			XEuchw_Write_x_43_Bytes, XEuchw_Write_x_44_Bytes, XEuchw_Write_x_45_Bytes,
-			XEuchw_Write_x_46_Bytes, XEuchw_Write_x_47_Bytes, XEuchw_Write_x_48_Bytes,
-			XEuchw_Write_x_49_Bytes, XEuchw_Write_x_50_Bytes, XEuchw_Write_x_51_Bytes,
-			XEuchw_Write_x_52_Bytes, XEuchw_Write_x_53_Bytes, XEuchw_Write_x_54_Bytes,
-			XEuchw_Write_x_55_Bytes, XEuchw_Write_x_56_Bytes, XEuchw_Write_x_57_Bytes,
-			XEuchw_Write_x_58_Bytes, XEuchw_Write_x_59_Bytes, XEuchw_Write_x_60_Bytes,
-			XEuchw_Write_x_61_Bytes, XEuchw_Write_x_62_Bytes, XEuchw_Write_x_63_Bytes};
-u8 TxData[BUFFER_SIZE];
+void (*XHLSWriteFunc[])() = { XEuchw_Write_x_0_Words,
+			XEuchw_Write_x_1_Words, XEuchw_Write_x_2_Words, XEuchw_Write_x_3_Words,
+			XEuchw_Write_x_4_Words, XEuchw_Write_x_5_Words, XEuchw_Write_x_6_Words,
+			XEuchw_Write_x_7_Words, XEuchw_Write_x_8_Words, XEuchw_Write_x_9_Words,
+			XEuchw_Write_x_10_Words, XEuchw_Write_x_11_Words, XEuchw_Write_x_12_Words,
+			XEuchw_Write_x_13_Words, XEuchw_Write_x_14_Words, XEuchw_Write_x_15_Words,
+			XEuchw_Write_x_16_Words, XEuchw_Write_x_17_Words, XEuchw_Write_x_18_Words,
+			XEuchw_Write_x_19_Words, XEuchw_Write_x_20_Words, XEuchw_Write_x_21_Words,
+			XEuchw_Write_x_22_Words, XEuchw_Write_x_23_Words, XEuchw_Write_x_24_Words,
+			XEuchw_Write_x_25_Words, XEuchw_Write_x_26_Words, XEuchw_Write_x_27_Words,
+			XEuchw_Write_x_28_Words, XEuchw_Write_x_29_Words, XEuchw_Write_x_30_Words,
+			XEuchw_Write_x_31_Words};
+u32 TxData[BUFFER_SIZE];
 u32 RxData[1]; /* for uint as float version */
 double RxDataSW;
-int TxDataSend(XEuchw *InstancePtr, u8 data[VECTOR_SIZE])
+int TxDataSend(XEuchw *InstancePtr, T_in data[VECTOR_SIZE])
 {
 	int status = XST_SUCCESS;
 	for (int br = 0; br < BRAMS; br++)
 	{
 		for (int i = 0; i < BUFFER_SIZE; i++)
 		{
-			TxData[i] = (i*BRAMS +br)< VECTOR_SIZE ? *((u8*) &data[(i*BRAMS) + br]) : 0;
+			TxData[i] = (i*BRAMS +br)< VECTOR_SIZE ? *((u32*) &data[(i*BRAMS) + br]) : 0;
 		}
 		XHLSWriteFunc[br](InstancePtr, 0, TxData, BUFFER_SIZE);
 	}
@@ -91,34 +83,31 @@ int TxDataSend(XEuchw *InstancePtr, u8 data[VECTOR_SIZE])
 
 void AdderTreeReceiveHandler(void *InstPtr)
 {
-	//u32 results[1]; /* uint version */
-   float results[1]; /* float point version */
+   T_in results[1];
    XEuchw_InterruptDisable(&hls_ip,1);
 
    XGpio_DiscreteWrite(&jb, 1, 0b01);
    XGpio_DiscreteWrite(&jb, 1, 0b00);
 
    RxData[0] = XEuchw_Get_y_sqrt(&hls_ip);
-
-   //results[0] = *((u32*) &(RxData[0])); /* uint version */
-   results[0] = *((float*) &(RxData[0])); /* float version */
+   results[0] = *((T_in*) &(RxData[0]));
 
    XGpio_DiscreteWrite(&jb, 1, 0b01);
    XGpio_DiscreteWrite(&jb, 1, 0b00);
 
-   //xil_printf("Resultados: %u ; %f\n", results[0], RxDataSW); /* uint version */
-   xil_printf("Resultados: %f ; %f\n", results[0], RxDataSW); /* float version */
+   xil_printf("Resultados: %d ; %f\n", results[0], RxDataSW); /* uint version */
+   //xil_printf("Resultados: %f ; %f\n", results[0], RxDataSW); /* float version */
 
    ip_status = IP_Ready;
    XEuchw_InterruptClear(&hls_ip,1);
    XEuchw_InterruptEnable(&hls_ip,1);
 }
 
-void getVector(u8 vec[VECTOR_SIZE])
+void getVector(T_in vec[VECTOR_SIZE])
 {
 	for (int i = 0; i < VECTOR_SIZE; i++)
 	{
-		scanf("%u", &vec[i]);
+		scanf("%d", &vec[i]);
 	}
 }
 
@@ -143,7 +132,7 @@ int main()
 	if (status != XST_SUCCESS) return XST_FAILURE;
 
 	ip_status = IP_Ready;
-	u8 txbuffer[VECTOR_SIZE];
+	T_in txbuffer[VECTOR_SIZE];
 	XGpio_DiscreteWrite(&jb, 1, 0b00);
 
 	for (int trial = 0; trial < N_VECTORS; trial++ )
@@ -233,7 +222,7 @@ int IntcInitFunction(u16 DeviceId)
 	return XST_SUCCESS;
 }
 
-double eucDistSW( u8 X[VECTOR_SIZE]){
+double eucDistSW( T_in X[VECTOR_SIZE]){
 
     double sum = 0;
     for (int i= 0; i < VECTOR_SIZE/2; i++){
@@ -241,3 +230,7 @@ double eucDistSW( u8 X[VECTOR_SIZE]){
     }
     return sqrt(sum);
 }
+
+
+
+

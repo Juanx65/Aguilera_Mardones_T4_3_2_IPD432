@@ -35,8 +35,8 @@ class zynqTest():
         self.vectorB = []
 
         for i in range(self.vectorSize):
-            randA = randint(0,254)
-            randB = randint(0,254)
+            randA = randint(0,1020)
+            randB = randint(0,1020)
 
             self.vectorA.append(randA)
             self.vectorB.append(randB)
@@ -78,7 +78,7 @@ class zynqTest():
 
 
 if __name__ == "__main__":
-    zynqDev = zynqTest('/dev/ttyUSB1', 115200, 1024, 10)
+    zynqDev = zynqTest('COM10', 115200, 1024, 10)
 
     print("Listening...")
 
