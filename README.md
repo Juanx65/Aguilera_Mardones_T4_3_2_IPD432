@@ -47,7 +47,7 @@ Para reproducir la síntesis del coprocesador mediante Vitis HLS se utilizan los
 
 ##### Tamaño del vectores de entrada y tipo de variable de salida
 
-Para esta experiencia se busca experimentar con distintos tamaños de vectores, por lo que, modificando el codigo fuente en ``` \VITIS_HLS_SRC\specs.h``` se puede modificar para obtener distintos tamaños de vector de entrada así como distintos tipos de variable resultante.
+Para esta experiencia se busca experimentar con distintos tamaños de vectores, así como con distintos tipos de variables resultante, por lo que, modificando el codigo fuente en ``` \VITIS_HLS_SRC\specs.h``` se puede configurar los parametros para obtener el diseño deseado.
 
 * Para vectores de tamaño 1024 palabras entre las lineas 14 y 18 dejar de la siguiente forma
 ```c
@@ -77,13 +77,14 @@ typedef float Tout;         /* Version punto flotante */
 //typedef uint32_t Tout;        /* Version entero sin signo */
 ```
 
-##### Síntesis
-El proceso de síntesis es el mismo para todos los disenos implementados.
+##### Síntesis  
+El proceso de síntesis es el mismo para todos los diseños a implementar.
 * Sintetizar el proyecto haciendo click en el botón ```Run``` de la barra superior del Software o  ```Run C Synthesis ``` ubicado en la sección ```Flow Navigator```.
- Si todo ha ido como corresponde, la síntesis debiese entregar resultados satisfactorios como los que se muestran en la Figura siguiente, cumpliendo con las restricciones de <em>timing</em> (sin <em>slack</em> negativo), y un uso de recursos  fisicamente implementable en la tarjeta de desarrollo a utilizar.
- En la Figura a continuación se muestra los resultados de sintesis para 1024 palabras para un resultado de punto flotante precisión simple:
 
-cambiar imagen ajaj
+ Si todo ha ido como corresponde, la síntesis debiese entregar resultados satisfactorios cumpliendo con las restricciones de <em>timing</em> (sin <em>slack</em> negativo), y un uso de recursos  fisicamente implementable en la tarjeta de desarrollo a utilizar.
+
+ En la Figura a continuación se muestra los resultados de sintesis para 1024 palabras para un resultado del tipo entero sin signo de 32 bits:
+
 ![Device part.](/Imagenes_Readme/performance_hls.png)
 
 * Para validar el diseño se ejecuta la Cosimulación  haciendo click en botón de ``` Run Cosimulation ``` ubicado en la sección ```Flow Navigator ```.
@@ -95,7 +96,20 @@ cambiar imagen ajaj
 En esta sección se explica el uso de los pragmas implementados al realizar la sección anterior, siguiendo la función definida en \SRC_VITIS_HLS\EucHW.cpp.
 
 * ```pragma ARRAY_PARTITION``` Este comando separa un arreglo de datos y genera arreglos más pequeños o de un solo elemento almacenandolos en bloques de memoria RAM individuales.
-* ```pragma INTERFACE``` escribir algo porfavor ... :(
+ Sintaxis:
+ ```c
+ #pragma HLS array_partition variable=<name> <type>  factor=<int>
+ ```
+  Donde ```variable``` especifica la variable a la cual se le aplica la directiva, ```type``` sporta block, cyclic y complete, que determinan la forma en que se re ordenan los datos. ```factor``` indica el largo en unidades de cada particion generada.
+* ```pragma INTERFACE``` Este comando define como seran creados los puertos en el momento de la síntesis.
+Sintaxis:
+```c
+#pragma HLS interface mode=<mode> port=<name> storage_impl=<name>
+```
+Donde ```mode``` especifica el el protocolo a utilizar en el puerto. ```port``` representa el nombre del argumento de la función al cual se le aplicara el protocolo especificado.
+
+Finalmente la función ```main``` del diseño queda como se muestra a continuación:
+
 ```cpp
 void eucHW(Tout *y_sqrt, T x[2*LENGTH])
 {
@@ -134,23 +148,34 @@ void eucHW(Tout *y_sqrt, T x[2*LENGTH])
 
 
 Para cualquier diseno de coprocesador que se desee implementar, los pasos a seguir son equivalentes:
-* Crear un nuevo proyecto de vivado.
-* Seleccionar la tarjeta Nexys4 DDR en la pestana Boards.
-* Una vez creado el proyecto, importar el archivo zybo.XCD presente en el repositorio.
-* Crear un bloque de diseno
-* Una vez creado, anadir los componentes zynq7, conncat, gpio axis.
-* En el procesador zynq7, activar las interrupciones con PL-PS, y cambiar las frecuecias 60 procesador, 100 PL.
-* En el puerto axis gpio, mostrar solo las salidas, las cuales se deben configurar para un vector de 2 bits. Activar las interrupciones.
-* Anadir un puerto de salida, para conectar en ellos los puertso pmod JB descomentados en el archivo XCD.
-* Conectar el puerto de salida jb[1:0] con la salida del axis gpio.
-* Conectar las interrupciones con la entrada del modulo concat.
-* Abrir el catalogo IP, anadir el bloque ip para el diseno de coprocesador deseado, los cuales se encuentran en la carpeta IP SRC del repositorio.
-* Anadir el bloque al diagrama, conectar la interrupcion al bloque concat.
-* Conectar la salida del bloque concat al puerto de interrupciones de procesador zynq7.
-* Correr las conecciones automaticas del bloque, verificar.
-* Generar bitstream.
-* Exportar hardware
- 
+* Abrir Vivado y crear un nuevo proyecto con ```Create Project```.
+* En la sección ```Project name``` elegir un nombre y directorio para el proyecto. Avanzar.
+* En la secció ```Project type``` conservar las configuraciones  ```RTL project``` y todas las demas casillas desmarcadas.
+* En ```Add Source``` click en siguiente (no se necesitan fuentes para este proyecto).
+* En ```Add Constraints``` click en  ```Add File``` y seleccionar el archivo ```zybo.XDC``` presente en el respoitorio.
+* En ```Default Part```, ```Boards``` elegir ```ZYBO```, si es necesario, descargar y Finalizar.
+* En ```Flow navigator```, ```IP INTEGRATOR``` seleccionar ```Create Block Design```.
+* Una vez abierto, añadir los siguientes componentes con sus respectivas configuraciones:
+  * ZYNQ7 Processing System -> Re-customize IP:
+    * Interrupts, Fabric Interrupts, PL-PS Interrupt Ports, IRQ_F2P
+    * Clock Configuration, Input Frequency (MHz) = 60, PL Fabric Clocks, FCLK_CLK0 = 100
+  * AXI GPIO -> Re-customize IP:
+    * IP Configuration, All Output ; GPIO Width = 2 ; Enable Interrupts
+  * Concat
+  * Pueto de salida jb -> Design, click derecho, Create Port:
+   * Port name = jb; Direction = output; Type = Data; Create vector: from 1 to 0.
+* Abrir Flow Navigator, Project Manager, IP Catalog y con click derecho en este abrir la opción ```Add Repository``` y añadir el bloque ip para el diseño de coprocesador deseado, los cuales se encuentran en la carpeta ```IP_SRC``` de este repositorio.
+* Conectar manualmente los sigueintes puertos :
+  * Puerto jb[1:0] con la salida de AXI GPIO, gpio_io_o[1:0].
+  * ip2intc_irpt de AXI GPIO con una de las entradas del modulo Concat.
+  * interrupt del bloque Euchw a una de las entradas del modulo Concat.
+  * dout del modulo Concat al puerto IRQ_F2P[0:0] del modulo ZYNQ7.
+* Correr ```Run Block Automation```, ```Run Connection Automation``` (marcando todas las casillas).
+* Verificar el diseño con ```Validate Design``` (dos veces si es necesario).
+* En Soruce, click derecho en design_1, Create HDL Wrapper, Let Vivado manage wrapper and auto-update, OK.
+* En Flow Navigator, Program and debug, Generar bitstream.
+* En File, Exportar hardware.
+
 #### Implementación usando Vitis
 
 ##### Video tutorial
