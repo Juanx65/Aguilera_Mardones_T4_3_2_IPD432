@@ -13,6 +13,7 @@ class zynqTest():
         self.tests = tests
         self.vectorSize = vectorSize
         self.avgError = 0
+        self.avgErrorPer = 0
         
 
     def sendVector(self, vector):
@@ -67,6 +68,7 @@ class zynqTest():
         result = 0
         
         errors = []
+        errors_per = []
         
         for tst in range(self.tests):
             
@@ -83,9 +85,12 @@ class zynqTest():
             
 
             error = abs(y_sqrt - y_sqrt_sw)
+
+            
             res_err = 100*error/y_sqrt_sw
 
             errors.append(error)
+            errors_per.append(res_err)
             
             
 
@@ -99,6 +104,7 @@ class zynqTest():
                 print(" TRIAL PASS")
 
         self.avgError =  sum(errors)/len(errors)
+        self.avgErrorPer = sum(errors_per)/len(errors_per)
         
         
         return result
@@ -106,7 +112,12 @@ class zynqTest():
 
 if __name__ == "__main__":
 
-    N_tests = int(input("Tests: "))
+    print("This python scripts checks behavior of the heterogeneous ", end ="")
+    print("system designed \nwith N instances of test generating random ", end = "")
+    print("vectors processing them and \ncompare the hardware result and ", end = "")
+    print("software result executing the same operation \n(Euclidean distance between two vectors. \n\n")
+
+    N_tests = int(input("How many Trials do you want to do: "))
     
     zynqDev = zynqTest('COM13', 115200, 1024, N_tests)
 
@@ -121,7 +132,7 @@ if __name__ == "__main__":
         
         
         
-        command = input("SEND 1 TO INSTANCE "+ str(zynqDev.tests) + "  TRIALS OF SoC BEHAVIOR OR 0 FINISH TEST: ") 
+        command = input("choose 1 to begin or 2 to abort: ")  
         
         if command == "1":
             print("")
@@ -134,15 +145,22 @@ if __name__ == "__main__":
                 print(50*"*")
                 print("*" + 22 * "", str(percent) + "%  TRIALS FAILED" + 22*"" + "*")
                 print("* AVERAGE ERROR:", zynqDev.avgError, "*" )
+                print("* AVERAGE % ERROR:", zynqDev.avgErrorPer, "*" )
                 print(50*"*")
             else:
                 print(50*"*")
                 print("*" + 22 * "", str(100- percent) + "% TRIALS PASSED" + 22*"" + "*")
                 print("* AVERAGE ERROR:", zynqDev.avgError, "*" )
+                print("* AVERAGE % ERROR:", zynqDev.avgErrorPer, "*" )
                 print(50*"*")
             
-        else:
+        
+        elif command == "2":
             break
+
+        else:
+            print("please choose an valid option\n")
+            
 
 
             
