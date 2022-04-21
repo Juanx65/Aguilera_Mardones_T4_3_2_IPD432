@@ -12,18 +12,21 @@ class zynqTest():
         self.vectorConcat = []
         self.tests = tests
         self.vectorSize = vectorSize
+        self.avgError = 0
+        
 
     def sendVector(self, vector):
         for element in vector:
             self.serial.write((str(element) + "\n").encode('ascii'))
             time.sleep(0.01)
 
-    def sendCommand(self):
-        element = input()
+
+
+    def sendCommand(self,element):        
         self.serial.write((str(element) + "\n").encode('ascii'))
 
     def recieveResult(self):
-        print("alo'????")
+        
         line = self.serial.readline().decode('ascii')
         while (line == None or line == "\n"):
             time.sleep(0.2)
@@ -58,13 +61,22 @@ class zynqTest():
     def runTest(self):
 
         result = 0
-
+        
+        errors = []
+        
         for tst in range(self.tests):
-            #self.generateVecs()
-            #self.sendVector(self.vectorConcat)
-            #self.sendCommand()
+            
+            
             y_sqrt, y_sqrt_sw = self.recieveResult()
-            res_err = 100*abs((y_sqrt - self.expected)/self.expected)
+
+            error = abs(y_sqrt - y_sqrt_sw)
+            res_err = 100*error/y_sqrt_sw
+
+            errors.append(error)
+            
+            
+
+                    
 
             print("TRIAL", tst+1, "HARDWARE RESULT:", y_sqrt, "\t SOFTWARE RESULT: ", y_sqrt_sw) #"\t SOFTWARE RESULT: ", round(self.expected,4), end="")
             if (res_err > 1):
@@ -72,31 +84,43 @@ class zynqTest():
                 print(" TRIAL FAILED")
             else:
                 print(" TRIAL PASS")
+
+        self.avgError =  sum(errors)/len(errors)
+        
+        
         return result
 
 
 if __name__ == "__main__":
-    zynqDev = zynqTest('COM10', 115200, 1024, 10)
+    
+    zynqDev = zynqTest('COM13', 115200, 1024, 10)
 
-    print("Listening...")
+    while(1):
+        
+        
+        command = input("SEND 1 TO INSTANCE "+ str(zynqDev.tests) + "  TRIALS OF SoC BEHAVIOR OR 0 FINISH TEST: ") 
+        
+        if command == "0":            
+            break
+        else:
+            print("")
+            zynqDev.sendCommand(command)        
+            res = zynqDev.runTest()
 
+            percent = 100*res/zynqDev.tests
 
-    #zynqDev.generateVecs()
-    #print(zynqDev.vectorA)
-    #print(zynqDev.vectorB)
+            if percent > 90:
+                print(50*"*")
+                print("*" + 22 * "", str(percent) + "%  TRIALS FAILED" + 22*"" + "*")
+                print("* AVERAGE ERROR:", zynqDev.avgError, "*" )
+                print(50*"*")
+            else:
+                print(50*"*")
+                print("*" + 22 * "", str(100- percent) + "% TRIALS PASSED" + 22*"" + "*")
+                print("* AVERAGE ERROR:", zynqDev.avgError, "*" )
+                print(50*"*")
 
-    res = zynqDev.runTest()
-
-    percent = 100*res/zynqDev.tests
-
-    if percent > 90:
-        print(50*"*")
-        print("*" + 22 * "", str(percent) + "%  TRIALS FAILED" + 22*"" + "*")
-        print(50*"*")
-    else:
-        print(50*"*")
-        print("*" + 22 * "", str(100- percent) + "% TRIALS PASSED" + 22*"" + "*")
-        print(50*"*")
-
-
+            
+            print()
+    print("TEST FINISHED")            
    # zynqDev.closeSerial()

@@ -119,7 +119,8 @@ void getCommand(int cmd[1])
 	}
 }
 
-void getVector(T_in vec[VECTOR_SIZE])
+
+void generateVector(T_in vec[VECTOR_SIZE])
 {
 	for (int i=0; i< VECTOR_SIZE; i ++)
 	{
@@ -154,26 +155,34 @@ int main()
 	ip_status = IP_Ready;
 	T_in txbuffer[VECTOR_SIZE];
 	XGpio_DiscreteWrite(&jb, 1, 0b00);
-	for (int trial = 0; trial < N_VECTORS; trial++ )
-	{
-		while (ip_status == IP_Busy) {};
 
-		getVector(txbuffer);
+	int cmd[1];
 
-		XGpio_DiscreteWrite(&jb, 1, 0b01);
-		XGpio_DiscreteWrite(&jb, 1, 0b00);
+	while(1){
 
-		RxDataSW = eucDistSW(txbuffer);
+		getCommand(cmd);
 
-		XGpio_DiscreteWrite(&jb, 1, 0b11);
-		XGpio_DiscreteWrite(&jb, 1, 0b00);
+		for (int trial = 0; trial < N_VECTORS; trial++ )
+		{
+			while (ip_status == IP_Busy) {};
 
-		TxDataSend(&hls_ip, txbuffer);
+			generateVector(txbuffer);
 
-		ip_status = IP_Busy;
-		XEuchw_Start(&hls_ip);
+			XGpio_DiscreteWrite(&jb, 1, 0b01);
+			XGpio_DiscreteWrite(&jb, 1, 0b00);
+
+			RxDataSW = eucDistSW(txbuffer);
+
+			XGpio_DiscreteWrite(&jb, 1, 0b11);
+			XGpio_DiscreteWrite(&jb, 1, 0b00);
+
+			TxDataSend(&hls_ip, txbuffer);
+
+			ip_status = IP_Busy;
+			XEuchw_Start(&hls_ip);
+		}
+
 	}
-
 	while(1);
 
     return 0;
