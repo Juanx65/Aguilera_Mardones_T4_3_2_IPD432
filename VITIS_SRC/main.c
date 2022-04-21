@@ -1,9 +1,10 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <xparameters.h>
 #include <xscugic.h>
 #include <xil_exception.h>
 #include "xeuchw.h"
-//#include <xil_printf.h>
+#include <xil_printf.h>
 
 #include <math.h>
 
@@ -23,6 +24,9 @@
 //#define BUFFER_SIZE			4		/* para vector de 128 palabras */
 #define BRAMS					32
 
+#define max_float 254
+#define min_float 0
+
 enum errTypes
 {
 	ERR_HLS_INIT,
@@ -36,7 +40,8 @@ enum IP_ready
 	IP_Busy
 };
 
-typedef int T_in;
+typedef float T_in;
+//typedef int T_in;
 
 int IntcInitFunction(u16 DeviceId);
 int errorHandler(enum errTypes err);
@@ -95,20 +100,35 @@ void reciveHandler(void *InstPtr)
    XGpio_DiscreteWrite(&jb, 1, 0b11);
    XGpio_DiscreteWrite(&jb, 1, 0b00);
 
-   xil_printf("Resultados: %d ; %f\n", results[0], RxDataSW); /* uint version */
-   //xil_printf("Resultados: %f ; %f\n", results[0], RxDataSW); /* float version */
+   //xil_printf("Resultados: %d ; %f\n", results[0], RxDataSW); /* uint version */
+   xil_printf("Resultados: %.3f ; %.3f\n", results[0], RxDataSW);
 
    ip_status = IP_Ready;
    XEuchw_InterruptClear(&hls_ip,1);
    XEuchw_InterruptEnable(&hls_ip,1);
 }
 
+
+void getCommand(int cmd[1])
+{
+	while(1)
+	{
+		scanf("%d", &cmd[0]);
+		if(cmd[0]==1)
+			return;
+	}
+}
+
 void getVector(T_in vec[VECTOR_SIZE])
 {
-	for (int i = 0; i < VECTOR_SIZE; i++)
+	for (int i=0; i< VECTOR_SIZE; i ++)
 	{
-		scanf("%d", &vec[i]);
+			T_in random = ((T_in) rand())/RAND_MAX;
+			T_in range = (max_float-min_float) *random;
+			T_in number = min_float + range;
+			vec[i] = number;
 	}
+	return;
 }
 
 int main()
@@ -134,7 +154,6 @@ int main()
 	ip_status = IP_Ready;
 	T_in txbuffer[VECTOR_SIZE];
 	XGpio_DiscreteWrite(&jb, 1, 0b00);
-
 	for (int trial = 0; trial < N_VECTORS; trial++ )
 	{
 		while (ip_status == IP_Busy) {};

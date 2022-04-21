@@ -21,14 +21,15 @@ void eucHW(T_in *y_sqrt, T_in x[2*LENGTH])
 	MainLoop: for (int i = 0; i < LENGTH; ++i)
 	{
 		#pragma HLS UNROLL factor=32
-		#pragma HLS PIPELINE ii=2  									/* Asegura trabajar con el pipeline lleno .*/
+		//#pragma HLS PIPELINE ii=2  									/* Asegura trabajar con el pipeline lleno .*/
+		#pragma HLS PIPELINE ii=160  									/* Asegura trabajar con el pipeline lleno .*/
 		res += (x[i+ LENGTH] -x[i])*(x[i+ LENGTH] -x[i]); 			/* res almacena la suma del cuadrado de la
 																	 * diferencia entre el vector A ( primera mitad
 																	 * del vector x) y B (segunda mitad del vector x)
 																	 */
 	}
 
-	//*y_sqrt = sqrt((long double)res); 											 /* raiz cuadrada para números de punto flotante */
-	*y_sqrt = hls::sqrt(res); 										 /* raíz cuadrada para números enteros sin signo */
+	*y_sqrt = hls::sqrtf(res); 											 /* raiz cuadrada para números de punto flotante */
+	//*y_sqrt = hls::sqrt(res); 										 /* raíz cuadrada para números enteros sin signo */
 	return;
 }

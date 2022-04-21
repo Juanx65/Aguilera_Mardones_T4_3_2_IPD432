@@ -1,7 +1,7 @@
 from serial import Serial
 from random import randint
-import time
 import struct
+import time
 
 class zynqTest():
     def __init__(self, port='COM8', baudrate=115200, vectorSize=128 ,tests=1):
@@ -18,13 +18,16 @@ class zynqTest():
             self.serial.write((str(element) + "\n").encode('ascii'))
             time.sleep(0.01)
 
+    def sendCommand(self):
+        element = input()
+        self.serial.write((str(element) + "\n").encode('ascii'))
+
     def recieveResult(self):
-
+        print("alo'????")
         line = self.serial.readline().decode('ascii')
-
-
         while (line == None or line == "\n"):
             time.sleep(0.2)
+        print(line)
         y_sqrt, y_sqrt_sw = line.strip().split(":")[1].split(";")
         return float(y_sqrt), float(y_sqrt_sw)
 
@@ -35,8 +38,9 @@ class zynqTest():
         self.vectorB = []
 
         for i in range(self.vectorSize):
-            randA = randint(-1020,1020)
-            randB = randint(-1020,1020)
+
+            randA = randint(0,254)
+            randB = randint(0,254)
 
             self.vectorA.append(randA)
             self.vectorB.append(randB)
@@ -56,24 +60,18 @@ class zynqTest():
         result = 0
 
         for tst in range(self.tests):
-            self.generateVecs()
-            self.sendVector(self.vectorConcat)
-
-
-            y_sqrt, y_sqrt_sw = (self.recieveResult())
-
+            #self.generateVecs()
+            #self.sendVector(self.vectorConcat)
+            #self.sendCommand()
+            y_sqrt, y_sqrt_sw = self.recieveResult()
             res_err = 100*abs((y_sqrt - self.expected)/self.expected)
 
-            print("TRIAL", tst+1, "HARDWARE RESULT:", y_sqrt, " ; ", y_sqrt_sw, "\t SOFTWARE RESULT: ", round(self.expected,4), end="")
+            print("TRIAL", tst+1, "HARDWARE RESULT:", y_sqrt, "\t SOFTWARE RESULT: ", y_sqrt_sw) #"\t SOFTWARE RESULT: ", round(self.expected,4), end="")
             if (res_err > 1):
                 result+=1
                 print(" TRIAL FAILED")
             else:
                 print(" TRIAL PASS")
-
-
-
-
         return result
 
 
@@ -83,8 +81,7 @@ if __name__ == "__main__":
     print("Listening...")
 
 
-    zynqDev.generateVecs()
-
+    #zynqDev.generateVecs()
     #print(zynqDev.vectorA)
     #print(zynqDev.vectorB)
 
