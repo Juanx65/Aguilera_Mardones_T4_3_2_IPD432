@@ -19,7 +19,7 @@ class zynqTest():
         for element in vector:
             self.serial.write((str(element) + "\n").encode('ascii'))
             time.sleep(0.01)
-
+            
 
 
     def sendCommand(self,element):        
@@ -27,11 +27,15 @@ class zynqTest():
 
     def recieveResult(self):
         
+        line = self.serial.readline().decode('ascii')        
+        while (line == None or line == "\n"):
+            time.sleep(0.01)        
+        y_sqrt = line.strip()
+        
         line = self.serial.readline().decode('ascii')
         while (line == None or line == "\n"):
-            time.sleep(0.2)
-        print(line)
-        y_sqrt, y_sqrt_sw = line.strip().split(":")[1].split(";")
+            time.sleep(0.01)  
+        y_sqrt_sw = line.strip()
         return float(y_sqrt), float(y_sqrt_sw)
 
     def generateVecs(self):
@@ -66,8 +70,17 @@ class zynqTest():
         
         for tst in range(self.tests):
             
+            try:
+                y_sqrt, y_sqrt_sw = self.recieveResult()
+                zynqDev.sendCommand(1)
+                
+            except:
+                sleep(1)
+                print("\n COMUNICATION ERROR \n")
+                zynqDev.sendCommand(2)
+                sleep(1)
+                
             
-            y_sqrt, y_sqrt_sw = self.recieveResult()
 
             error = abs(y_sqrt - y_sqrt_sw)
             res_err = 100*error/y_sqrt_sw
@@ -77,8 +90,8 @@ class zynqTest():
             
 
                     
-
-            print("TRIAL", tst+1, "HARDWARE RESULT:", y_sqrt, "\t SOFTWARE RESULT: ", y_sqrt_sw) #"\t SOFTWARE RESULT: ", round(self.expected,4), end="")
+            spaces = (43 - (len("TRIAL") + len(str(tst+1)) + len("HARDWARE RESULT:")))//2*" "
+            print("TRIAL", tst+1, "HARDWARE RESULT:", y_sqrt, spaces,"SOFTWARE RESULT: ", y_sqrt_sw, end = "") #"\t SOFTWARE RESULT: ", round(self.expected,4), end="")
             if (res_err > 1):
                 result+=1
                 print(" TRIAL FAILED")
@@ -92,17 +105,25 @@ class zynqTest():
 
 
 if __name__ == "__main__":
-    
-    zynqDev = zynqTest('COM13', 115200, 1024, 10)
 
+    N_tests = int(input("Tests: "))
+    
+    zynqDev = zynqTest('COM13', 115200, 1024, N_tests)
+
+    zynqDev.sendCommand(N_tests)
+    
+    print("")
+    
+
+    
+    
     while(1):
+        
         
         
         command = input("SEND 1 TO INSTANCE "+ str(zynqDev.tests) + "  TRIALS OF SoC BEHAVIOR OR 0 FINISH TEST: ") 
         
-        if command == "0":            
-            break
-        else:
+        if command == "1":
             print("")
             zynqDev.sendCommand(command)        
             res = zynqDev.runTest()
@@ -119,6 +140,10 @@ if __name__ == "__main__":
                 print("*" + 22 * "", str(100- percent) + "% TRIALS PASSED" + 22*"" + "*")
                 print("* AVERAGE ERROR:", zynqDev.avgError, "*" )
                 print(50*"*")
+            
+        else:
+            break
+
 
             
             print()

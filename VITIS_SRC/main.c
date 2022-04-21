@@ -17,7 +17,7 @@
 
 #define JBPMOD_DEVICE_ID			XPAR_XGPIOPS_0_DEVICE_ID
 
-#define N_VECTORS				10
+//#define N_VECTORS				10000
 #define VECTOR_SIZE				2*1024		/* para vector de 1024 palabras */
 //#define VECTOR_SIZE			128*2   	/* para vector de 128 palabras */
 #define BUFFER_SIZE				64			/* para vector de 1024 palabras */
@@ -101,7 +101,10 @@ void reciveHandler(void *InstPtr)
    XGpio_DiscreteWrite(&jb, 1, 0b00);
 
    //xil_printf("Resultados: %d ; %f\n", results[0], RxDataSW); /* uint version */
-   xil_printf("Resultados: %.3f ; %.3f\n", results[0], RxDataSW);
+   //xil_printf("Resultados: %.3f ; %.3f\n", results[0], RxDataSW);
+
+   xil_printf("%f\n", results[0]);
+   xil_printf("%f\n",  RxDataSW);
 
    ip_status = IP_Ready;
    XEuchw_InterruptClear(&hls_ip,1);
@@ -111,12 +114,12 @@ void reciveHandler(void *InstPtr)
 
 void getCommand(int cmd[1])
 {
-	while(1)
-	{
+	//while(1)
+	//{
 		scanf("%d", &cmd[0]);
-		if(cmd[0]==1)
+		//if(cmd[0]==1)
 			return;
-	}
+	//}
 }
 
 
@@ -157,6 +160,9 @@ int main()
 	XGpio_DiscreteWrite(&jb, 1, 0b00);
 
 	int cmd[1];
+	getCommand(cmd);
+
+	int N_VECTORS = cmd[0];
 
 	while(1){
 
@@ -182,12 +188,37 @@ int main()
 
 				ip_status = IP_Busy;
 				XEuchw_Start(&hls_ip);
+
+				getCommand(cmd);
+
+				if (cmd[0] != 1){
+
+					while (ip_status == IP_Busy) {};
+
+						generateVector(txbuffer);
+
+						XGpio_DiscreteWrite(&jb, 1, 0b01);
+						XGpio_DiscreteWrite(&jb, 1, 0b00);
+
+						RxDataSW = eucDistSW(txbuffer);
+
+						XGpio_DiscreteWrite(&jb, 1, 0b11);
+						XGpio_DiscreteWrite(&jb, 1, 0b00);
+
+						TxDataSend(&hls_ip, txbuffer);
+
+						ip_status = IP_Busy;
+						XEuchw_Start(&hls_ip);
+
+				}
 			}
 		}
+
+
 		else break;
 	}
 
-	//while(1);
+	while(1);
 
     return 0;
 }
