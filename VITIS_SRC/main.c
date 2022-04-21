@@ -162,28 +162,32 @@ int main()
 
 		getCommand(cmd);
 
-		for (int trial = 0; trial < N_VECTORS; trial++ )
+		if (cmd[0] == 1)
 		{
-			while (ip_status == IP_Busy) {};
+			for (int trial = 0; trial < N_VECTORS; trial++ )
+			{
+				while (ip_status == IP_Busy) {};
 
-			generateVector(txbuffer);
+				generateVector(txbuffer);
 
-			XGpio_DiscreteWrite(&jb, 1, 0b01);
-			XGpio_DiscreteWrite(&jb, 1, 0b00);
+				XGpio_DiscreteWrite(&jb, 1, 0b01);
+				XGpio_DiscreteWrite(&jb, 1, 0b00);
 
-			RxDataSW = eucDistSW(txbuffer);
+				RxDataSW = eucDistSW(txbuffer);
 
-			XGpio_DiscreteWrite(&jb, 1, 0b11);
-			XGpio_DiscreteWrite(&jb, 1, 0b00);
+				XGpio_DiscreteWrite(&jb, 1, 0b11);
+				XGpio_DiscreteWrite(&jb, 1, 0b00);
 
-			TxDataSend(&hls_ip, txbuffer);
+				TxDataSend(&hls_ip, txbuffer);
 
-			ip_status = IP_Busy;
-			XEuchw_Start(&hls_ip);
+				ip_status = IP_Busy;
+				XEuchw_Start(&hls_ip);
+			}
 		}
-
+		else break;
 	}
-	while(1);
+
+	//while(1);
 
     return 0;
 }
