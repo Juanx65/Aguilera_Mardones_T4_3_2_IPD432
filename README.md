@@ -168,7 +168,7 @@ Para cualquier diseño de coprocesador que se desee implementar, los pasos a seg
 * Una vez abierto, añadir los siguientes componentes con sus respectivas configuraciones:
   * ZYNQ7 Processing System -> Re-customize IP:
     * Interrupts, Fabric Interrupts, PL-PS Interrupt Ports, IRQ_F2P.
-    * Clock Configuration, Input Frequency (MHz) = 60, PL Fabric Clocks, FCLK_CLK0 = 100.
+    * Clock Configuration, Input Frequency (MHz) = 50, PL Fabric Clocks, FCLK_CLK0 = 100.
   * AXI GPIO -> Re-customize IP:
     * IP Configuration, All Output ; GPIO Width = 2 ; Enable Interrupts.
   * Concat.
@@ -241,10 +241,6 @@ xil_printf("%f\n", results[0]); // Para variables de tipo flotante
  generateVector(txbuffer, INT); // INT para vectores int, FLOAT para vectores float.
  ```
 
-
-Adicionalmente, se programó el script de Python `\PYTHON_SRC\serial_test.py`  donde se pueden generan un número variable de  instancias de prueba. Para cada
-instancia se evalúa si el error numérico obtenido cumple con cierto margen de error, en este caso se consideró que un resultado es válido si presenta un error menor al 1 % respecto al resultado que se obtendría realizando la misma operación mediante software.
-
 ##### Implementación PS en Vitis IDE
 
 Para implementar la operación de la distancia euclidiana entre los vectores de entrada se creó la siguiente función en C dentro de el archivo fuente `main.c`.
@@ -262,6 +258,8 @@ double eucDistSW( T_in X[VECTOR_SIZE]){
 
 La cual recibe los vectores de entrada concatenados en ` X`  y realiza la operación correspondiente.
 
+Adicionalmente, se programó el script de Python `\PYTHON_SRC\serial_test.py`  donde se pueden generan un número variable de  instancias de prueba, donde se reciben los resultados obtenidos por el PL y el PS. Para cada instancia se evalúa si el error numérico obtenido cumple con cierto margen de error, en este caso se consideró que un resultado es válido si presenta un error menor al 1 % respecto al resultado que se obtendría realizando la misma operación mediante software.
+
 #### Reporte de frecuencia, latencia y throughtput
 
 Las versiónes crítica del proyecto, es decir, cuando se trabajan vectores de 1024 elementos de 32 bits se implementaron con una frecuencia de 100 MHz, para datos enteros y para la versión con flotantes.
@@ -275,18 +273,18 @@ Las versiónes crítica del proyecto, es decir, cuando se trabajan vectores de 1
   Para media la latencia del sistema se dio uso un analizador lógico conectado a un pin de salida de la tarjeta de desarrollo utilizada, el cual indicaba el inicio del proceso de comunicación entre PS y PL así como la finalización de la operación de cálculo. Con este método y varias instancias de prueba se llegó a que la ```latencia promedio del sistema es de 562.0780 us ``` para la versión que opera con flotantes y  una ``` latencia promedio de ---- us``` para la versión que trabaja con enteros de 32 bits.
 
 #### Throughput
- Considerando que la frecuencia de reloj utilizada es de 100 Mhz y las latencias estimadas,se tiene  que el  ```throughtput estimado  es de 1779 resultado/s ```para la versión que opera con flotantes, entanto la versión que trabaja con enteros de 32 bits tiene un ```throughtput estimado de --- resultado/s```
+ Considerando que la frecuencia de reloj utilizada es de 100 Mhz y las latencias estimadas,se tiene  que el  ```throughtput estimado  es de 1779 resultado/s ```para la versión que opera con flotantes, entanto la versión que trabaja con enteros de 32 bits tiene un ```throughtput estimado de --- resultado/s```.
 #### Tiempo de sintesis
-
+Para operaciones entre vectores de 1024 palabras:
 
 * Sintesis (HLS) versión enteros = 1.07 min
 * Sintesis (HLS) versión flotantes = 0.51 min
 
 
 
-* Sintesis (Vivado) versión flotantes = ???
-* Sintesis (Vivado) versión enteros = ???
+* Sintesis (Vivado) versión flotantes = 2.57 min
+* Sintesis (Vivado) versión enteros = 2.13 min
 
 
-* Implementacion versión flotantes = ???
-* Implementacion versión enteros = ???
+* Implementacion versión flotantes = 4.11 min
+* Implementacion versión enteros = 3.51 min
