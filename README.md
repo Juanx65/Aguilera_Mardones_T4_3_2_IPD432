@@ -22,7 +22,7 @@ Los tiempos estimados de síntesis e implementación fueron tomados operando en 
 ##### Video tutorial
 
 <div align="center">
-      <a href="https://www.youtube.com/watch?v=BcKH4BeqSr0">
+      <a href="https://youtu.be/Br60XaD3chg">
      <img
       src="/Imagenes_Readme/vitis_hls_youtube.png"
       alt="Tutoral VITIS HLS"
