@@ -24,8 +24,10 @@
 //#define BUFFER_SIZE			4		/* para vector de 128 palabras */
 #define BRAMS					32
 
-#define max_float 1023
-#define min_float -1023
+#define max_value 	1023
+#define min_value 	-1023
+#define FLOAT 		1
+#define INT 		0
 
 enum errTypes
 {
@@ -40,8 +42,8 @@ enum IP_ready
 	IP_Busy
 };
 
-typedef float T_in;			//Para variables de tipo flotante
-//typedef int T_in;			//Para variables de tipo entero
+//typedef float T_in;			//Para variables de tipo flotante
+typedef int T_in;			//Para variables de tipo entero
 
 int IntcInitFunction(u16 DeviceId);
 int errorHandler(enum errTypes err);
@@ -96,8 +98,8 @@ void reciveHandler(void *InstPtr)
 
    XGpio_DiscreteWrite(&jb, 1, 0b00);
 
-	 //xil_printf("%d\n", results[0]); // Para variables de tipo entero
-   xil_printf("%f\n", results[0]); // Para variables de tipo flotante
+	xil_printf("%d\n", results[0]); // Para variables de tipo entero
+   //xil_printf("%f\n", results[0]); // Para variables de tipo flotante
 
    xil_printf("%f\n",  RxDataSW);
 
@@ -118,17 +120,24 @@ void getCommand(int cmd[1])
 }
 
 
-void generateVector(T_in vec[VECTOR_SIZE])
+void generateVector(T_in vec[VECTOR_SIZE], int type)
 {
 	for (int i=0; i< VECTOR_SIZE; i ++)
 	{
+		if(type == FLOAT){
 			T_in random = ((T_in) rand())/RAND_MAX;
-			T_in range = (max_float-min_float) *random;
-			T_in number = min_float + range;
+			T_in range = (T_in) (max_value-min_value) *random;
+			T_in number = min_value + range;
 			vec[i] = number;
+		} else if (type == INT)
+		{
+			vec[i] = (rand() %(max_value - min_value + 1)) + min_value;
+		}
 	}
+
 	return;
 }
+
 
 int main()
 {
@@ -169,7 +178,7 @@ int main()
 			{
 				while (ip_status == IP_Busy) {};
 
-				generateVector(txbuffer);
+				generateVector(txbuffer, INT); // INT para vectores int, FLOAT para vectores float.
 
 				XGpio_DiscreteWrite(&jb, 1, 0b01);
 
@@ -188,7 +197,7 @@ int main()
 
 					while (ip_status == IP_Busy) {};
 
-						generateVector(txbuffer);
+						generateVector(txbuffer, INT); // INT para vectores int, FLOAT para vectores float.
 
 						XGpio_DiscreteWrite(&jb, 1, 0b01);
 
@@ -279,5 +288,5 @@ double eucDistSW( T_in X[VECTOR_SIZE]){
     for (int i= 0; i < VECTOR_SIZE/2; i++){
             sum += (X[i]- X[i + VECTOR_SIZE/2])*(X[i]- X[i+VECTOR_SIZE/2]);
     }
-    return sqrt(sum);
+    return sqrt( (long double) sum);
 }
