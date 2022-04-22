@@ -212,6 +212,16 @@ Para la implementacion de cualquiera de los coprocesadores diseñados, se debe s
 * Del menu de template, elegir `Empty application(C)`, `Next >` y finalizar.
 * Una vez abierto el projecto, dirigirse a `src`, clic derecho, `new`, `File`.
 * En el menu de `Create New File`, expandir opción `<< Advanced`, seleccionar `Link to file in the system`, `Browse`, sellecionar el archivo `\VITIS_SRC\main.c` disponible en el repositorio.
+* 
+`Importante:`
+ Para lograr construir las librerías en el proyecto es necesario hacer un ajuste en las configuraciones:
+ * En Explorer, clic derecho en `[standalone_ps7_cortexa9_0]`.
+ * Abrir la opción `C/C++ Build Settings`.
+ * En C/C++ Build, seleccionar Settings.
+ * En configuration : Debug [Active]
+ * Navegar a Tool Settings, ARM v7 gcc linker, Libraries.
+ * En Libraries (-l) añadir la opcion `m`.
+ ![-lm setting.](/Imagenes_Readme/lib_settings.png)
 
 Para adaptar el código `main.c` a los distintos diseños implementados, se deben modificar los siguientes parametros según corresponda:
 
