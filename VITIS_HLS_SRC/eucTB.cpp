@@ -7,15 +7,15 @@
 
 using namespace std;
 
-void genRandArray(int min, int max, int size, T *array);
-int compare(float* gold, Tout* result, int size, double th);
+void genRandArray(int min, int max, int size, T_in *array);
+int compare(float* gold, T_in* result, int size, double th);
 
 int main (){
 	int errors = 0;
 	int tests = 100;
 
-	T A[LENGTH], B[LENGTH];
-	Tout C_HW[1];
+	T_in A[LENGTH], B[LENGTH];
+	T_in C_HW[1];
 	float C_SW[1];
 
 	double diff;
@@ -30,7 +30,7 @@ int main (){
 		int m = sizeof(A) / sizeof(*A);
 		int n = sizeof(B) / sizeof(*B);
 
-		T x[m + n];
+		T_in x[m + n];
 		memcpy(x, A, sizeof(A));
 		memcpy(x + m, B, sizeof(B));
 
@@ -48,13 +48,13 @@ int main (){
 }
 
 
-void genRandArray(int min, int max, int size, T *array){
+void genRandArray(int min, int max, int size, T_in *array){
     for(int i=0; i<size; i++){
         array[i] = rand()%255; // min + static_cast <T> (rand()) / ( static_cast <T> (RAND_MAX/(max-min)));
     }
 }
 
-int compare(float* gold, Tout* result, int size, double th){
+int compare(float* gold, T_in* result, int size, double th){
         int errors = 0;
         double dif = 0;
         for (int i=0; i<size; i++){
