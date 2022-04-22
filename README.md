@@ -49,46 +49,32 @@ Para reproducir la síntesis del coprocesador mediante Vitis HLS se utilizan los
 
 Para esta experiencia se busca experimentar con distintos tamaños de vectores, así como con distintos tipos de variables resultantes, por lo que, modificando el código fuente en ``` \VITIS_HLS_SRC\specs.h```, se puede configurar los parámetros para obtener el diseño deseado.
 
-* Para vectores de tamaño 1024 palabras entre las líneas 14 y 18 dejar de la siguiente forma
+* En las lineas 8-9 se define el largo del vector de la siguiente forma, donde se descomenta el largo deseado.
 ```c
-typedef ap_uint<26> T_int;    /* Tipo variable intermedia para 1024 palabras* /
-//typedef ap_uint<23> T_int;  /* Tipo variable intermedia para 128 palabras */
 #define LENGTH 1024           /* Largo de vectores para 1024 palabras */
 //#define LENGTH 128          /* Largo de vectores para 128 palabras */
 ```
 
-* Para vectores de 128 palabras
+* En las lineas 5-6 se define el tipo de dato a operar, donde se descomenta el tipo de dato deseado.
 ```c
-//typedef ap_uint<26> T_int;    /* Tipo variable intermedia para 1024 palabras* /
-typedef ap_uint<23> T_int;  /* Tipo variable intermedia para 128 palabras */
-//#define LENGTH 1024           /* Largo de vectores para 1024 palabras */
-#define LENGTH 128          /* Largo de vectores para 128 palabras */
+//typedef int T_in;     /* Version entero sin signo */
+typedef float T_in;     /* Version punto flotante */
 ```
 
-* Para operar con resultado sin signo entero de 32 bits entre las líneas 9 y 10
-```c
-//typedef float Tout;         /* Version punto flotante */
-typedef uint32_t Tout;        /* Version entero sin signo */
-```
- En el archivo ```\VITS_HLS_SCR\eucHW.cpp``` dejar descomentada la asignación de la variable de salida en las líneas 31-32 de la siguiente manera
+En el archivo ```\VITS_HLS_SCR\eucHW.cpp```  debe modificar las siguientes líneas dependiendo de los tipos de variable a operar.
+* Líneas 32-31:
  ```c
- //*y_sqrt = sqrt((long double)res); 	/* raiz cuadrada para números de punto flotante */
-*y_sqrt = hls::sqrt(res); 	/* raíz cuadrada para números enteros sin signo */
+ *y_sqrt = hls::sqrtf(res); 				/* raiz cuadrada para números de punto flotante */
+ //*y_sqrt = hls::sqrt(res); 				/* raíz cuadrada para números enteros */
  ```
-
-* Para operar con resultado del tipo punto flotante de precisión simple:
-```c
-typedef float Tout;         /* Version punto flotante */
-//typedef uint32_t Tout;        /* Version entero sin signo */
-```
- En el archivo ```\VITS_HLS_SCR\eucHW.cpp``` dejar descomentada la asignación de la variable de salida en las líneas 31-32 de la siguiente manera
+* Lineas 24-25:
  ```c
- *y_sqrt = sqrt((long double)res); 	/* raiz cuadrada para números de punto flotante */
-//*y_sqrt = hls::sqrt(res); 	/* raíz cuadrada para números enteros sin signo */
+ //#pragma HLS PIPELINE ii=2  						 /* Operaciones de enteros */
+ #pragma HLS PIPELINE ii=160  						/* Operaciones flotantes */
  ```
 ##### Síntesis  
 El proceso de síntesis es el mismo para todos los diseños a implementar.
-* Sintetizar el proyecto haciendo click en el botón ```Run``` de la barra superior del Software o  ```Run C Synthesis ``` ubicado en la sección ```Flow Navigator```.
+* Sintetizar el proyecto haciendo click en el botón `Run` de la barra superior del Software o  `Run C Synthesis `  ubicado en la sección `Flow Navigator`.
 
  Si todo ha ido como corresponde, la síntesis debiese entregar resultados satisfactorios cumpliendo con las restricciones de <em>timing</em> (sin <em>slack</em> negativo), y un uso de recursos  fisicamente implementable en la tarjeta de desarrollo a utilizar.
 
@@ -96,48 +82,59 @@ El proceso de síntesis es el mismo para todos los diseños a implementar.
 
 ![Device part.](/Imagenes_Readme/performance_hls.png)
 
-* Para validar el diseño se ejecuta la Cosimulación  haciendo click en botón de ``` Run Cosimulation ``` ubicado en la sección ```Flow Navigator ```.
+* Para validar el diseño se ejecuta la Cosimulación  haciendo click en botón de `Run Cosimulation`  ubicado en la sección `Flow Navigator `.
 
-* Exportar IP hacienco click en el botón ```Export RTL``` en la sección ```Flow navigator```. Esta acción genera un archvio .zip, el cual al ser descomprimido puede ser añadido a ```Vivado``` como se mostrará más adelante.
+* Exportar IP hacienco click en el botón `Export RTL`  en la sección `Flow navigator`. Esta acción genera un archvio .zip, el cual al ser descomprimido puede ser añadido a
+`Vivado`  como se mostrará más adelante.
 
 #### Uso de pragmas en Vitis HLS
 
-En esta sección se explica el uso de los pragmas implementados al realizar la sección anterior, siguiendo la función definida en ```\SRC_VITIS_HLS\EucHW.cpp```.
+En esta sección se explica el uso de los pragmas implementados al realizar la sección anterior, siguiendo la función definida en ` SRC_VITIS_HLS\EucHW.cpp`.
 
-* ```pragma ARRAY_PARTITION``` Este comando separa un arreglo de datos y genera arreglos más pequeños o de un solo elemento almacenandolos en bloques de memoria RAM individuales.
+* `pragma ARRAY_PARTITION`  Este comando separa un arreglo de datos y genera arreglos más pequeños o de un solo elemento almacenandolos en bloques de memoria RAM individuales.
  Sintaxis:
- ```c
+ ` c
  #pragma HLS array_partition variable=<name> <type>  factor=<int>
- ```
-  Donde ```variable``` especifica la variable a la cual se le aplica la directiva, ```type``` sporta block, cyclic y complete, que determinan la forma en que se re ordenan los datos. ```factor``` indica el largo en unidades de cada particion generada.
-* ```pragma INTERFACE``` Este comando define como seran creados los puertos en el momento de la síntesis.
+ `
+  Donde `variable`  especifica la variable a la cual se le aplica la directiva, ` type`  sporta block, cyclic y complete, que determinan la forma en que se re ordenan los datos. ` factor`  indica el largo en unidades de cada particion generada.
+
+* ` pragma INTERFACE`  Este comando define como seran creados los puertos en el momento de la síntesis.
 Sintaxis:
 ```c
 #pragma HLS interface mode=<mode> port=<name> storage_impl=<name>
 ```
-Donde ```mode``` especifica el el protocolo a utilizar en el puerto. ```port``` representa el nombre del argumento de la función al cual se le aplicara el protocolo especificado.
+Donde ` mode`  especifica el el protocolo a utilizar en el puerto. ` port`  representa el nombre del argumento de la función al cual se le aplicara el protocolo especificado.
 
-Finalmente la función ```main``` del diseño queda como se muestra a continuación:
+* ` pragma PIPELINE`  Este comando se asegura resolver la violación de intervalo de iniciación, manteniendo el pipline lleno.
+Sintaxis:
+```c
+#pragma HLS pipeline ii=<iterations>
+```
 
-```cpp
-void eucHW(Tout *y_sqrt, T x[2*LENGTH])
+Donde ` ii`  Especifica el intervalo de iniciación deseado para el pipeline.
+
+Finalmente la función `main` del diseño queda como se muestra a continuación:
+
+```c
+void eucHW(T_in *y_sqrt, T_in x[2*LENGTH])
 {
 	#pragma HLS INTERFACE mode=s_axilite port=x storage_impl=bram
 	#pragma HLS INTERFACE mode=s_axilite port=y_sqrt
 	#pragma HLS INTERFACE mode=s_axilite port=return
-	#pragma HLS ARRAY_PARTITION variable=x type=cyclic factor=64
+	#pragma HLS ARRAY_PARTITION variable=x type=cyclic factor=32
 
-	T_int res = 0;
+	T_in res = 0;
 	MainLoop: for (int i = 0; i < LENGTH; ++i)
 	{
-		#pragma HLS UNROLL factor=64
-		#pragma HLS PIPELINE ii=2
+		#pragma HLS UNROLL factor=32
+		//#pragma HLS PIPELINE ii=2  									/* Operaciones de enteros  */
+		#pragma HLS PIPELINE ii=160  									/* Operaciones flotantes  */
 		res += (x[i+ LENGTH] -x[i])*(x[i+ LENGTH] -x[i]);
 	}
-	//*y_sqrt = sqrt(res);
-	*y_sqrt = hls::sqrt(res);
+
+	*y_sqrt = hls::sqrtf(res);      /* raiz cuadrada para números de punto flotante */
+	//*y_sqrt = hls::sqrt(res); 	 /* raíz cuadrada para números enteros */
 	return;
-}
 ```
 
 #### Implementación de comprocesador en PL usando Vivado
@@ -155,15 +152,14 @@ void eucHW(Tout *y_sqrt, T x[2*LENGTH])
 
 ##### Guía paso a paso
 
-
 Para cualquier diseño de coprocesador que se desee implementar, los pasos a seguir son equivalentes, solo debe importar el repositorio IP deseado:
-* Abrir Vivado y crear un nuevo proyecto con ```Create Project```.
-* En la sección ```Project name``` elegir un nombre y directorio para el proyecto. Avanzar.
-* En la sección ```Project type``` conservar las configuraciones  ```RTL project``` y todas las demas casillas desmarcadas.
-* En ```Add Source``` click en siguiente (no se necesitan fuentes para este proyecto).
-* En ```Add Constraints``` click en  ```Add File``` y seleccionar el archivo ```zybo.XDC``` presente en el respoitorio.
-* En ```Default Part```, ```Boards``` elegir ```ZYBO```, si es necesario, descargar y Finalizar.
-* En ```Flow navigator```, ```IP INTEGRATOR``` seleccionar ```Create Block Design```.
+* Abrir Vivado y crear un nuevo proyecto con `Create Project`.
+* En la sección `Project name` elegir un nombre y directorio para el proyecto. Avanzar.
+* En la sección ` Project type`  conservar las configuraciones  `RTL project`  y todas las demas casillas desmarcadas.
+* En `Add Source`  click en siguiente (no se necesitan fuentes para este proyecto).
+* En `Add Constraints`  click en  `Add File`  y seleccionar el archivo ` zybo.XDC`  presente en el respoitorio.
+* En `Default Part`, ` Boards`  elegir ` ZYBO`  si es necesario, descargar y Finalizar.
+* En ` Flow navigator`,  ` IP INTEGRATOR`  seleccionar ` Create Block Design` .
 * Una vez abierto, añadir los siguientes componentes con sus respectivas configuraciones:
   * ZYNQ7 Processing System -> Re-customize IP:
     * Interrupts, Fabric Interrupts, PL-PS Interrupt Ports, IRQ_F2P.
@@ -173,19 +169,19 @@ Para cualquier diseño de coprocesador que se desee implementar, los pasos a seg
   * Concat.
   * jb (puerto de salida Pmod) -> Design, click derecho, Create Port:
    * Port name = jb; Direction = output; Type = Data; Create vector: from 1 to 0.
-* Abrir Flow Navigator, Project Manager, IP Catalog y con click derecho en este abrir la opción ```Add Repository``` y añadir el bloque ip para el diseño de coprocesador deseado, los cuales se encuentran en la carpeta ```IP_SRC``` de este repositorio.
+* Abrir Flow Navigator, Project Manager, IP Catalog y con click derecho en este abrir la opción `Add Repository`  y añadir el bloque ip para el diseño de coprocesador deseado, los cuales se encuentran en la carpeta `IP_SRC`  de este repositorio.
 * Conectar manualmente los siguientes puertos:
   * Puerto jb[1:0] con la salida de AXI GPIO, gpio_io_o[1:0].
   * ip2intc_irpt de AXI GPIO con una de las entradas del modulo Concat.
   * interrupt del bloque Euchw a una de las entradas del modulo Concat.
   * dout del modulo Concat al puerto IRQ_F2P[0:0] del modulo ZYNQ7.
-* Correr ```Run Block Automation```, ```Run Connection Automation``` (marcando todas las casillas).
-* Verificar el diseño con ```Validate Design``` (dos veces si es necesario).
+* Correr `Run Block Automation` , `Run Connection Automation`  (marcando todas las casillas).
+* Verificar el diseño con `Validate Design`  (dos veces si es necesario).
 * En Soruce, click derecho en design_1, Create HDL Wrapper, Let Vivado manage wrapper and auto-update, OK.
 * En Flow Navigator, Program and debug, Generar bitstream.
 * En File, Export, Export hardware, Include bitstream, elige nombre y carpeta de destino.
 
-#### Implementación de coprocesador PL en Vitis IDE
+#### Integrar PS y PL en Vitis IDE para ZYBO
 
 ##### Video tutorial
 
@@ -200,16 +196,47 @@ Para cualquier diseño de coprocesador que se desee implementar, los pasos a seg
 
 ##### Guía paso a paso
 
-Para la implementacion en la zybo de cualquiera de los coprocesadores disenados, se debe seguir los siguentes pasos:
-* Crear un nuevo proyecto en vitis ide ( o abrirlo usando launch vitis desde viviado ).
-* Utilizar el archivo .ns creado al exportar el hardware.
-* etc
+Para la implementacion de cualquiera de los coprocesadores diseñados, se debe seguir los siguentes pasos:
+* Crear un nuevo proyecto en Vitis IDE ( o abrirlo usando `launch vitis` desde Vivado ).
+* Elegir el directorio del workspace, Launch.
+* Del menu de bienvenida, abrir `Create Application Project`, `Next >`.
+* Seleccionar `Create a new aplication from hardware (XSA)`.
+* En `Hardware Specification`, `XSA File` seleccionar el archivo `.csv` creado al exportar el hardware en el tutorial de Vivado, `Next >`.
+* Elegir un nombre para  el proyecto, `Next >`.
+* `Next >`.
+* Del menu de template, elegir `Empty application(C)`, `Next >` y finalizar.
+* Una vez abierto el projecto, dirigirse a `src`, clic derecho, `new`, `File`.
+* En el menu de `Create New File`, expandir opción `<< Advanced`, seleccionar `Link to file in the system`, `Browse`, sellecionar el archivo `\VITIS_SRC\main.c` disponible en el repositorio.
 
-Adicionalmente, se programó el script de Python ``` \PYTHON_SRC\serial_test.py ``` donde se generan 1000 instancias de prueba, donde llegamos a un error promedio de 0.24, el cual es menor al 1% de error promedio.
+Para adaptar el `main.c` a los distintos diseños implementados, se deben cambiar los siguientes parametros:
 
-#### Implementación PS en Vitis IDE
+* Para vectores de entrada de distintos largos, es necesario modificar entre las líneas 20-25:
+```c
+#define VECTOR_SIZE				2*1024		/* para vector de 1024 palabras */
+//#define VECTOR_SIZE			128*2   	/* para vector de 128 palabras */
+#define BUFFER_SIZE				64			/* para vector de 1024 palabras */
+//#define BUFFER_SIZE			4		/* para vector de 128 palabras */
+#define BRAMS					32
+```
+ Donde BRAMS se mantiene dependiendo del factor de unroll y array partition usado para la sintesis de hls, el valor de BUFFER_SIZE es igual a `VECTOR_SIZE/BRAMS`.
 
-Para implementar la operación de la distancia euclidiana entre los vectores de entrada se creo la siguiente función en C dentro de el archivo fuente ```main.c``` .
+*  Para vectores de distintos tipo, entre las líneas 43-44, descomentar según lo siguiente:
+```c
+typedef float T_in;     //Para variables de tipo flotante
+//typedef int T_in;     //Para variables de tipo entero
+```
+
+* Ademas, modificar entre las líneas 99-100:
+```c
+//xil_printf("%d\n", results[0]); // Para variables de tipo entero
+xil_printf("%f\n", results[0]); // Para variables de tipo flotante
+```
+
+Adicionalmente, se programó el script de Python `\PYTHON_SRC\serial_test.py`  donde se pueden generan distintas instancias de prueba.
+
+##### Implementación PS en Vitis IDE
+
+Para implementar la operación de la distancia euclidiana entre los vectores de entrada se creo la siguiente función en C dentro de el archivo fuente `main.c`.
 
 ```c
 double eucDistSW( u8 X[VECTOR_SIZE]){
@@ -222,7 +249,7 @@ double eucDistSW( u8 X[VECTOR_SIZE]){
 }
 ```
 
-La cual recibe los vectores de entrada concatenados en ```X``` y realiza la operación correspondiente.
+La cual recibe los vectores de entrada concatenados en ` X`  y realiza la operación correspondiente.
 
 #### Reporte de frecuencia, latencia y throughtput
 

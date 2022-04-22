@@ -24,8 +24,8 @@
 //#define BUFFER_SIZE			4		/* para vector de 128 palabras */
 #define BRAMS					32
 
-#define max_float 254
-#define min_float 0
+#define max_float 1023
+#define min_float -1023
 
 enum errTypes
 {
@@ -40,8 +40,8 @@ enum IP_ready
 	IP_Busy
 };
 
-typedef float T_in;
-//typedef int T_in;
+typedef float T_in;			//Para variables de tipo flotante
+//typedef int T_in;			//Para variables de tipo entero
 
 int IntcInitFunction(u16 DeviceId);
 int errorHandler(enum errTypes err);
@@ -91,19 +91,14 @@ void reciveHandler(void *InstPtr)
    T_in results[1];
    XEuchw_InterruptDisable(&hls_ip,1);
 
-   XGpio_DiscreteWrite(&jb, 1, 0b01);
-   XGpio_DiscreteWrite(&jb, 1, 0b00);
-
    RxData[0] = XEuchw_Get_y_sqrt(&hls_ip);
    results[0] = *((T_in*) &(RxData[0]));
 
-   XGpio_DiscreteWrite(&jb, 1, 0b11);
    XGpio_DiscreteWrite(&jb, 1, 0b00);
 
-   //xil_printf("Resultados: %d ; %f\n", results[0], RxDataSW); /* uint version */
-   //xil_printf("Resultados: %.3f ; %.3f\n", results[0], RxDataSW);
+	 //xil_printf("%d\n", results[0]); // Para variables de tipo entero
+   xil_printf("%f\n", results[0]); // Para variables de tipo flotante
 
-   xil_printf("%f\n", results[0]);
    xil_printf("%f\n",  RxDataSW);
 
    ip_status = IP_Ready;
@@ -177,12 +172,10 @@ int main()
 				generateVector(txbuffer);
 
 				XGpio_DiscreteWrite(&jb, 1, 0b01);
-				XGpio_DiscreteWrite(&jb, 1, 0b00);
 
 				RxDataSW = eucDistSW(txbuffer);
 
-				XGpio_DiscreteWrite(&jb, 1, 0b11);
-				XGpio_DiscreteWrite(&jb, 1, 0b00);
+				XGpio_DiscreteWrite(&jb, 1, 0b10);
 
 				TxDataSend(&hls_ip, txbuffer);
 
@@ -198,12 +191,10 @@ int main()
 						generateVector(txbuffer);
 
 						XGpio_DiscreteWrite(&jb, 1, 0b01);
-						XGpio_DiscreteWrite(&jb, 1, 0b00);
 
 						RxDataSW = eucDistSW(txbuffer);
 
-						XGpio_DiscreteWrite(&jb, 1, 0b11);
-						XGpio_DiscreteWrite(&jb, 1, 0b00);
+						XGpio_DiscreteWrite(&jb, 1, 0b10);
 
 						TxDataSend(&hls_ip, txbuffer);
 
