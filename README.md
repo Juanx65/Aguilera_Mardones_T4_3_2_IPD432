@@ -206,7 +206,7 @@ Para la implementacion de cualquiera de los coprocesadores diseñados, se debe s
 * Elegir el directorio del workspace, Launch.
 * Del menu de bienvenida, abrir `Create Application Project`, `Next >`.
 * Seleccionar `Create a new aplication from hardware (XSA)`.
-* En `Hardware Specification`, `XSA File` seleccionar el archivo `.csv` creado al exportar el hardware en el tutorial de Vivado, `Next >`.
+* En `Hardware Specification`, `XSA File` seleccionar el archivo `.xsa` creado al exportar el hardware en el tutorial de Vivado, En la carpeta `\XCA_SRC` dentro del repositorio se encuentran dos `.xsa` disponibles. `Next >`.
 * Elegir un nombre para  el proyecto, `Next >`.
 * `Next >`.
 * Del menu de template, elegir `Empty application(C)`, `Next >` y finalizar.
